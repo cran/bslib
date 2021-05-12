@@ -2,34 +2,15 @@
 #'
 #' @description
 #'
-#' Creates a Bootstrap theme object which can be:
+#' Creates a Bootstrap theme object, where you can:
 #'
-#' * Used in any HTML page powered by [shiny::bootstrapLib()] (e.g.,
-#'   [shiny::fluidPage()], [shiny::bootstrapPage()], etc).
-#' * Used in any output format powered by [rmarkdown::html_document()]
-#'   (or [rmarkdown::html_document_base()]).
-#' * Used more generally in any [htmltools::tags] via [bs_theme_dependencies()].
-#'
-#' These functions (i.e., `bs_theme()` or `bs_theme_update()`) allow you to do
-#' the following common Bootstrap customization(s):
-#'
-#' * Choose a (major) Bootstrap version.
+#' * Choose a (major) Bootstrap `version`.
 #' * Choose a [Bootswatch theme](https://bootswatch.com) (optional).
 #' * Customize main colors and fonts via explicitly named arguments (e.g.,
 #'   `bg`, `fg`, `primary`, etc).
-#' * Customize other, lower-level, Bootstrap Sass variable defaults via `...`
-#'   * See all [Bootstrap 4 variables](https://github.com/rstudio/bslib/blob/master/inst/lib/bs/scss/_variables.scss)
-#'   * See all [Bootstrap 3 variables](https://github.com/rstudio/bslib/blob/master/inst/lib/bs-sass/assets/stylesheets/bootstrap/_variables.scss)
+#' * Customize other, lower-level, Bootstrap Sass variable defaults via `...`.
 #'
-#' For less common theming customization(s), you can modify theme objects to:
-#'
-#' * Add additional Sass/CSS rules (see [bs_add_rules()] and [sass_partial()]).
-#' * Leverage (new) Sass functions and mixins in those rules (see
-#' [bs_add_declarations()])
-#'
-#' These lower-level theming tools build on the concept of a
-#' [sass::sass_layer()]. To learn more, [see
-#' here](https://rstudio.github.io/sass/articles/sass.html#composable-sass).
+#' To learn more about how to implement custom themes, as well as how to use them inside Shiny and R Markdown, [see here](https://rstudio.github.io/bslib/articles/bslib.html).
 #'
 #' @section Colors:
 #'
@@ -70,11 +51,12 @@
 #'  noticeable with remote web fonts on a slow internet connection.
 #'
 #'  ```
-#'  bs_theme(base_font = list(font_google("Pacifico", local = FALSE), "Roboto", "sans-serif")
+#'  bs_theme(base_font = font_collection(font_google("Pacifico", local = FALSE), "Roboto", "sans-serif")
 #'  ````
 #'
 #' @param version The major version of Bootstrap to use (see [versions()]
-#'   for possible values).
+#'   for possible values). Defaults to the currently recommended version
+#'   for new projects (currently Bootstrap 4).
 #' @param bootswatch The name of a bootswatch theme (see [bootswatch_themes()]
 #'   for possible values). When provided to `bs_theme_update()`, any previous
 #'   Bootswatch theme is first removed before the new one is applied (use
@@ -97,10 +79,13 @@
 #' @param base_font The default typeface.
 #' @param code_font The typeface to be used for code. Be sure this is monospace!
 #' @param heading_font The typeface to be used for heading elements.
+#' @param font_scale A scalar multiplier to apply to the base font size. For
+#'   example, a value of `1.5` scales font sizes to 150% and a value of `0.8`
+#'   scales to 80%. Must be a positive number.
 #'
 #' @return a [sass::sass_bundle()] (list-like) object.
 #'
-#' @references \url{https://getbootstrap.com/docs/4.4/getting-started/theming/}
+#' @references \url{https://rstudio.github.io/bslib/articles/bslib.html}
 #' @references \url{https://rstudio.github.io/sass/}
 #' @seealso [bs_add_variables()], [bs_theme_preview()]
 #' @examples
@@ -130,7 +115,8 @@
 bs_theme <- function(version = version_default(), bootswatch = NULL, ...,
                      bg = NULL, fg = NULL, primary = NULL, secondary = NULL,
                      success = NULL, info = NULL, warning = NULL, danger = NULL,
-                     base_font = NULL, code_font = NULL, heading_font = NULL) {
+                     base_font = NULL, code_font = NULL, heading_font = NULL,
+                     font_scale = NULL) {
   theme <- bs_bundle(
     bs_theme_init(version, bootswatch),
     bootstrap_bundle(version),
@@ -150,7 +136,8 @@ bs_theme <- function(version = version_default(), bootswatch = NULL, ...,
     danger = danger,
     base_font = base_font,
     code_font = code_font,
-    heading_font = heading_font
+    heading_font = heading_font,
+    font_scale = font_scale
   )
 }
 
@@ -160,7 +147,8 @@ bs_theme <- function(version = version_default(), bootswatch = NULL, ...,
 bs_theme_update <- function(theme, ..., bootswatch = NULL, bg = NULL, fg = NULL,
                             primary = NULL, secondary = NULL, success = NULL,
                             info = NULL, warning = NULL, danger = NULL,
-                            base_font = NULL, code_font = NULL, heading_font = NULL) {
+                            base_font = NULL, code_font = NULL, heading_font = NULL,
+                            font_scale = NULL) {
   assert_bs_theme(theme)
 
   if (!is.null(bootswatch)) {
@@ -181,8 +169,15 @@ bs_theme_update <- function(theme, ..., bootswatch = NULL, bg = NULL, fg = NULL,
     theme, primary = primary, secondary = secondary, success = success,
     info = info, warning = warning, danger = danger
   )
-  theme <- bs_font_dependencies(theme, base = base_font, code = code_font, heading = heading_font)
   theme <- bs_fonts(theme, base = base_font, code = code_font, heading = heading_font)
+  if (!is.null(font_scale)) {
+    stopifnot(is.numeric(font_scale) && length(font_scale) == 1)
+    theme <- bs_add_variables(
+      theme, "font-size-base" = paste(
+        font_scale, "*", bs_get_variables(theme, "font-size-base")
+      )
+    )
+  }
   bs_add_variables(theme, ...)
 }
 
@@ -261,7 +256,7 @@ bootstrap_bundle <- function(version) {
       # Don't name this "core" bundle so it can't easily be removed
       sass_layer(
         defaults = bs4_sass_files(c("deprecated", "functions", "variables")),
-        declarations = bs4_sass_files("mixins")
+        mixins = bs4_sass_files("mixins")
       ),
       # Returns a _named_ list of bundles (i.e., these should be easily removed)
       !!!rule_bundles(
@@ -290,7 +285,7 @@ bootstrap_bundle <- function(version) {
     three = sass_bundle(
       sass_layer(
         defaults = bs3_sass_files("variables"),
-        declarations = bs3_sass_files("mixins")
+        mixins = bs3_sass_files("mixins")
       ),
       # Should match https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/_bootstrap.scss
       !!!rule_bundles(
@@ -337,7 +332,7 @@ bootstrap_javascript <- function(version) {
 bs3compat_bundle <- function() {
   sass_layer(
     defaults = sass_file(system_file("bs3compat", "_defaults.scss", package = "bslib")),
-    declarations = sass_file(system_file("bs3compat", "_declarations.scss", package = "bslib")),
+    mixins = sass_file(system_file("bs3compat", "_declarations.scss", package = "bslib")),
     rules = sass_file(system_file("bs3compat", "_rules.scss", package = "bslib")),
     # Gyliphicon font files
     file_attachments = c(
@@ -379,7 +374,9 @@ bs3_accessibility_bundle <- function() {
 # -----------------------------------------------------------------
 
 bootswatch_bundle <- function(bootswatch, version) {
-  if (!length(bootswatch)) return(NULL)
+  if (!length(bootswatch) || isTRUE(bootswatch %in% c("default", "bootstrap"))) {
+    return(NULL)
+  }
 
   bootswatch <- switch_version(
     version,
@@ -463,8 +460,8 @@ bs3compat_navbar_defaults <- function(bootswatch) {
       inverse = c("light", "light")
     ),
     flatly = list(
-      default = c("dark", "primary"),
-      inverse = c("dark", "dark")
+      default = c("light", "primary"),
+      inverse = c("dark", "secondary")
     ),
     journal = list(
       default = c("light", "light"),

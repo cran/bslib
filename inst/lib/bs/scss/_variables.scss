@@ -4,6 +4,8 @@
 // consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
 
 // Color system
+//
+// Sets colors used throughout app
 
 $white:    #fff !default;
 $gray-100: #f8f9fa !default;
@@ -276,7 +278,7 @@ $embed-responsive-aspect-ratios: join(
 // Font, line-height, and color for body text, headings, and more.
 
 // stylelint-disable value-keyword-case
-$font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
 $font-family-base:            $font-family-sans-serif !default;
 // stylelint-enable value-keyword-case
@@ -328,6 +330,9 @@ $text-muted:                  $gray-600 !default;
 $blockquote-small-color:      $gray-600 !default;
 $blockquote-small-font-size:  $small-font-size !default;
 $blockquote-font-size:        $font-size-base * 1.25 !default;
+$blockquote-border-width:     $spacer / 4 !default;
+$blockquote-border-color:     $gray-200 !default;
+
 
 $hr-border-color:             rgba($black, .1) !default;
 $hr-border-width:             $border-width !default;
@@ -452,6 +457,8 @@ $btn-transition:              color .15s ease-in-out, background-color .15s ease
 
 
 // Forms
+//
+// Settings related to input forms
 
 $label-margin-bottom:                   .5rem !default;
 
@@ -587,7 +594,7 @@ $custom-select-disabled-bg:         $gray-200 !default;
 $custom-select-bg-size:             8px 10px !default; // In pixels because image dimensions
 $custom-select-indicator-color:     $gray-800 !default;
 $custom-select-indicator:           url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'><path fill='#{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>") !default;
-$custom-select-background:          escape-svg($custom-select-indicator) no-repeat right $custom-select-padding-x center / $custom-select-bg-size !default; // Used so we can have multiple background elements (e.g., arrow and feedback icon)
+$custom-select-background:          escape-svg($custom-select-indicator) right $custom-select-padding-x center / $custom-select-bg-size no-repeat !default; // Used so we can have multiple background elements (e.g., arrow and feedback icon)
 
 $custom-select-feedback-icon-padding-right: add(1em * .75, (2 * $custom-select-padding-y * .75) + $custom-select-padding-x + $custom-select-indicator-padding) !default;
 $custom-select-feedback-icon-position:      center right ($custom-select-padding-x + $custom-select-indicator-padding) !default;
@@ -655,6 +662,8 @@ $custom-file-text: (
 
 
 // Form validation
+//
+// Control how feedback for form inputs looks
 
 $form-feedback-margin-top:          $form-text-margin-top !default;
 $form-feedback-font-size:           $small-font-size !default;
@@ -696,6 +705,8 @@ $zindex-tooltip:                    1070 !default;
 
 
 // Navs
+//
+// General navigation component settings
 
 $nav-link-padding-y:                .5rem !default;
 $nav-link-padding-x:                1rem !default;
@@ -718,6 +729,8 @@ $nav-divider-margin-y:              $spacer / 2 !default;
 
 
 // Navbar
+//
+// Navigation bar settings
 
 $navbar-padding-y:                  $spacer / 2 !default;
 $navbar-padding-x:                  $spacer !default;
@@ -735,19 +748,29 @@ $navbar-toggler-padding-x:          .75rem !default;
 $navbar-toggler-font-size:          $font-size-lg !default;
 $navbar-toggler-border-radius:      $btn-border-radius !default;
 
-$navbar-dark-color:                 rgba($white, .5) !default;
-$navbar-dark-hover-color:           rgba($white, .75) !default;
-$navbar-dark-active-color:          $white !default;
-$navbar-dark-disabled-color:        rgba($white, .25) !default;
-$navbar-dark-toggler-icon-bg:       url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='#{$navbar-dark-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>") !default;
-$navbar-dark-toggler-border-color:  rgba($white, .1) !default;
+$navbar-nav-scroll-max-height:      75vh !default;
 
-$navbar-light-color:                rgba($black, .5) !default;
-$navbar-light-hover-color:          rgba($black, .7) !default;
-$navbar-light-active-color:         rgba($black, .9) !default;
-$navbar-light-disabled-color:       rgba($black, .3) !default;
+
+$navbar-bg:                         null !default;  // Background color for any navbarPage()
+$navbar-dark-bg:                    $navbar-bg !default;  // Background color for navbarPage(inverse = TRUE)
+$navbar-light-bg:                   $navbar-bg !default;  // Background color for navbarPage(inverse = FALSE)
+
+$navbar-dark-contrast:              if($navbar-dark-bg, color-contrast($navbar-dark-bg), $white) !default; // Deepest contrasting color for navbarPage(inverse = TRUE). Defaults to $white or $black based on luminance of $navbar-dark-bg
+$navbar-light-contrast:             if($navbar-light-bg, color-contrast($navbar-light-bg), $black) !default; // Deepest contrasting color for navbarPage(inverse = FALSE). Defaults to $white or $black based on luminance of $navbar-light-bg
+
+$navbar-dark-color:                 rgba($navbar-dark-contrast, .5) !default;
+$navbar-dark-hover-color:           rgba($navbar-dark-contrast, .75) !default;
+$navbar-dark-active-color:          $navbar-dark-contrast !default;
+$navbar-dark-disabled-color:        rgba($navbar-dark-contrast, .25) !default;
+$navbar-dark-toggler-icon-bg:       url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='#{$navbar-dark-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>") !default;
+$navbar-dark-toggler-border-color:  rgba($navbar-dark-contrast, .1) !default;
+
+$navbar-light-color:                rgba($navbar-light-contrast, .5) !default;
+$navbar-light-hover-color:          rgba($navbar-light-contrast, .75) !default;
+$navbar-light-active-color:         $navbar-light-contrast !default;
+$navbar-light-disabled-color:       rgba($navbar-light-contrast, .25) !default;
 $navbar-light-toggler-icon-bg:      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='#{$navbar-light-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>") !default;
-$navbar-light-toggler-border-color: rgba($black, .1) !default;
+$navbar-light-toggler-border-color: rgba($navbar-light-contrast, .1) !default;
 
 $navbar-light-brand-color:                $navbar-light-active-color !default;
 $navbar-light-brand-hover-color:          $navbar-light-active-color !default;
@@ -776,12 +799,12 @@ $dropdown-box-shadow:               0 .5rem 1rem rgba($black, .175) !default;
 
 $dropdown-link-color:               $gray-900 !default;
 $dropdown-link-hover-color:         darken($gray-900, 5%) !default;
-$dropdown-link-hover-bg:            $gray-100 !default;
+$dropdown-link-hover-bg:            $gray-200 !default;
 
 $dropdown-link-active-bg:           $component-active-bg !default;
 $dropdown-link-active-color:        color-contrast($dropdown-link-active-bg, $component-active-color) !default;
 
-$dropdown-link-disabled-color:      $gray-600 !default;
+$dropdown-link-disabled-color:      $gray-500 !default;
 
 $dropdown-item-padding-y:           .25rem !default;
 $dropdown-item-padding-x:           1.5rem !default;
@@ -791,6 +814,8 @@ $dropdown-header-padding:           $dropdown-padding-y $dropdown-item-padding-x
 
 
 // Pagination
+//
+// Styles for components with multiple pages to be clicked through
 
 $pagination-padding-y:              .5rem !default;
 $pagination-padding-x:              .75rem !default;
@@ -820,8 +845,12 @@ $pagination-disabled-color:         $gray-600 !default;
 $pagination-disabled-bg:            $white !default;
 $pagination-disabled-border-color:  $gray-300 !default;
 
+$pagination-border-radius-sm:       $border-radius-sm !default;
+$pagination-border-radius-lg:       $border-radius-lg !default;
 
 // Jumbotron
+//
+// Styles for jumbotron component "for calling extra attention to featured content or information."
 
 $jumbotron-padding:                 2rem !default;
 $jumbotron-color:                   null !default;
@@ -829,6 +858,8 @@ $jumbotron-bg:                      $gray-200 !default;
 
 
 // Cards
+//
+// Individual cards for displaying grouped information
 
 $card-spacer-y:                     .75rem !default;
 $card-spacer-x:                     1.25rem !default;
@@ -853,6 +884,8 @@ $card-columns-margin:               $card-spacer-y !default;
 
 
 // Tooltips
+//
+// Popups with info for hovering/clicking
 
 $tooltip-font-size:                 $font-size-sm !default;
 $tooltip-max-width:                 200px !default;
@@ -878,6 +911,8 @@ $form-feedback-tooltip-border-radius: $tooltip-border-radius !default;
 
 
 // Popovers
+//
+// Popper.js popover/tooltip styling
 
 $popover-font-size:                 $font-size-sm !default;
 $popover-bg:                        $white !default;
@@ -905,6 +940,8 @@ $popover-arrow-outer-color:         fade-in($popover-border-color, .05) !default
 
 
 // Toasts
+//
+// "Lightweight notifications designed to mimic the push notifications"
 
 $toast-max-width:                   350px !default;
 $toast-padding-x:                   .75rem !default;
@@ -923,6 +960,8 @@ $toast-header-border-color:         rgba(0, 0, 0, .05) !default;
 
 
 // Badges
+//
+// "Small count and labeling component."
 
 $badge-font-size:                   75% !default;
 $badge-font-weight:                 $font-weight-bold !default;
@@ -940,6 +979,8 @@ $badge-pill-border-radius:          10rem !default;
 
 
 // Modals
+//
+// Screen-filling popup dialogs that typically require the user to dismiss
 
 // Padding applied to the modal body
 $modal-inner-padding:               1rem !default;
@@ -999,6 +1040,8 @@ $alert-color-level:                 6 !default;
 
 
 // Progress bars
+//
+// Basic bars for displaying progress of some process
 
 $progress-height:                   1rem !default;
 $progress-font-size:                $font-size-base * .75 !default;
@@ -1012,6 +1055,8 @@ $progress-bar-transition:           width .6s ease !default;
 
 
 // List group
+//
+// Basic unordered lists
 
 $list-group-color:                  null !default;
 $list-group-bg:                     $white !default;
@@ -1038,6 +1083,8 @@ $list-group-action-active-bg:       $gray-200 !default;
 
 
 // Image thumbnails
+//
+// Styles for small preview images
 
 $thumbnail-padding:                 .25rem !default;
 $thumbnail-bg:                      $body-bg !default;
@@ -1048,12 +1095,16 @@ $thumbnail-box-shadow:              0 1px 2px rgba($black, .075) !default;
 
 
 // Figures
+//
+// Caption settings for figures
 
 $figure-caption-font-size:          90% !default;
 $figure-caption-color:              $gray-600 !default;
 
 
 // Breadcrumbs
+//
+// Navigation history information widgets
 
 $breadcrumb-font-size:              null !default;
 
@@ -1072,6 +1123,8 @@ $breadcrumb-border-radius:          $border-radius !default;
 
 
 // Carousel
+//
+// Rotating set of items
 
 $carousel-control-color:             $white !default;
 $carousel-control-width:             15% !default;
@@ -1099,6 +1152,8 @@ $carousel-transition:                transform $carousel-transition-duration eas
 
 
 // Spinners
+//
+// Spinning widgets to display ongoing process
 
 $spinner-width:         2rem !default;
 $spinner-height:        $spinner-width !default;
@@ -1110,6 +1165,8 @@ $spinner-border-width-sm: .2em !default;
 
 
 // Close
+//
+// Buttons for closing a dialog
 
 $close-font-size:                   $font-size-base * 1.5 !default;
 $close-font-weight:                 $font-weight-bold !default;
@@ -1118,6 +1175,8 @@ $close-text-shadow:                 0 1px 0 $white !default;
 
 
 // Code
+//
+// How monospaced code environments look
 
 $code-font-size:                    87.5% !default;
 // Amount intentionally matches mixture amount of shiny::inputPanel()
@@ -1139,6 +1198,8 @@ $pre-scrollable-max-height:         340px !default;
 
 
 // Utilities
+//
+// Misc general CSS settings
 
 $displays: none, inline, inline-block, block, table, table-row, table-cell, flex, inline-flex !default;
 $overflows: auto, hidden !default;
@@ -1147,6 +1208,8 @@ $user-selects: all, auto, none !default;
 
 
 // Printing
+//
+// Control how page looks when using browser print dialog
 
 $print-page-size:                   a3 !default;
 $print-body-min-width:              map-get($grid-breakpoints, "lg") !default;

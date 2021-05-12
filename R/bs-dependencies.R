@@ -56,7 +56,7 @@
 #'
 bs_theme_dependencies <- function(
   theme,
-  sass_options = sass::sass_options(output_style = "compressed"),
+  sass_options = sass::sass_options_get(output_style = "compressed"),
   cache = sass::sass_cache_get(),
   jquery = jquerylib::jquery_core(3),
   precompiled = get_precompiled_option("bslib.precompiled", default = TRUE)
@@ -64,7 +64,6 @@ bs_theme_dependencies <- function(
 
   theme <- as_bs_theme(theme)
   version <- theme_version(theme)
-  theme_layer <- as_sass_layer(theme)
 
   if (is.character(cache)) {
     cache <- sass_cache_get_dir(cache)
@@ -85,8 +84,11 @@ bs_theme_dependencies <- function(
       out_file <- file.path(out_dir, basename(precompiled_css))
       file.copy(precompiled_css, out_file)
 
+      # Usually sass() would handle file_attachments and dependencies,
+      # but we need to do this manually
+      out_file <- attachDependencies(out_file, htmlDependencies(as_sass(theme)))
       write_file_attachments(
-        theme_layer$file_attachments,
+        as_sass_layer(theme)$file_attachments,
         out_dir
       )
     }
@@ -94,6 +96,18 @@ bs_theme_dependencies <- function(
 
   # If precompiled css not found, compile normally.
   if (is.null(out_file)) {
+
+    contrast_warn <- get_shiny_devmode_option(
+      "bslib.color_contrast_warnings",
+      default = FALSE,
+      devmode_default = TRUE,
+      devmode_message = paste(
+        "Enabling warnings about low color contrasts found inside `bslib::bs_theme()`.",
+        "To suppress these warnings, set `options(bslib.color_contrast_warnings = FALSE)`"
+      )
+    )
+    theme <- bs_add_variables(theme, "color-contrast-warnings" = contrast_warn)
+
     out_file <- sass(
       input = theme,
       options = sass_options,
@@ -129,7 +143,7 @@ bs_theme_dependencies <- function(
         meta = list(viewport = "width=device-width, initial-scale=1, shrink-to-fit=no")
       )
     ),
-    theme_layer$html_deps
+    htmlDependencies(out_file)
   ))
 }
 
@@ -344,16 +358,8 @@ as_bs_theme <- function(theme) {
   )
 }
 
-get_current_theme <- function() {
-  if (!is_available("shiny", "1.5.0.9007")) {
-    warning("This functionality requires shiny v1.6 or higher")
-    return(NULL)
-  }
-  getFromNamespace("getCurrentTheme", "shiny")()
-}
-
 register_theme_dependency <- function(x) {
-  if (!is_available("shiny", "1.5.0.9007")) {
+  if (!is_available("shiny", "1.6.0")) {
     warning("This functionality requires shiny v1.6 or higher")
     return(NULL)
   }

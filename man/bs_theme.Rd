@@ -20,7 +20,8 @@ bs_theme(
   danger = NULL,
   base_font = NULL,
   code_font = NULL,
-  heading_font = NULL
+  heading_font = NULL,
+  font_scale = NULL
 )
 
 bs_theme_update(
@@ -37,14 +38,16 @@ bs_theme_update(
   danger = NULL,
   base_font = NULL,
   code_font = NULL,
-  heading_font = NULL
+  heading_font = NULL,
+  font_scale = NULL
 )
 
 is_bs_theme(x)
 }
 \arguments{
 \item{version}{The major version of Bootstrap to use (see \code{\link[=versions]{versions()}}
-for possible values).}
+for possible values). Defaults to the currently recommended version
+for new projects (currently Bootstrap 4).}
 
 \item{bootswatch}{The name of a bootswatch theme (see \code{\link[=bootswatch_themes]{bootswatch_themes()}}
 for possible values). When provided to \code{bs_theme_update()}, any previous
@@ -81,6 +84,10 @@ Typically a shade of blue-green.}
 
 \item{heading_font}{The typeface to be used for heading elements.}
 
+\item{font_scale}{A scalar multiplier to apply to the base font size. For
+example, a value of \code{1.5} scales font sizes to 150\% and a value of \code{0.8}
+scales to 80\%. Must be a positive number.}
+
 \item{theme}{a \code{\link[=bs_theme]{bs_theme()}} object.}
 
 \item{x}{an object.}
@@ -89,38 +96,16 @@ Typically a shade of blue-green.}
 a \code{\link[sass:sass_layer]{sass::sass_bundle()}} (list-like) object.
 }
 \description{
-Creates a Bootstrap theme object which can be:
+Creates a Bootstrap theme object, where you can:
 \itemize{
-\item Used in any HTML page powered by \code{\link[shiny:bootstrapLib]{shiny::bootstrapLib()}} (e.g.,
-\code{\link[shiny:fluidPage]{shiny::fluidPage()}}, \code{\link[shiny:bootstrapPage]{shiny::bootstrapPage()}}, etc).
-\item Used in any output format powered by \code{\link[rmarkdown:html_document]{rmarkdown::html_document()}}
-(or \code{\link[rmarkdown:html_document_base]{rmarkdown::html_document_base()}}).
-\item Used more generally in any \link[htmltools:builder]{htmltools::tags} via \code{\link[=bs_theme_dependencies]{bs_theme_dependencies()}}.
-}
-
-These functions (i.e., \code{bs_theme()} or \code{bs_theme_update()}) allow you to do
-the following common Bootstrap customization(s):
-\itemize{
-\item Choose a (major) Bootstrap version.
+\item Choose a (major) Bootstrap \code{version}.
 \item Choose a \href{https://bootswatch.com}{Bootswatch theme} (optional).
 \item Customize main colors and fonts via explicitly named arguments (e.g.,
 \code{bg}, \code{fg}, \code{primary}, etc).
-\item Customize other, lower-level, Bootstrap Sass variable defaults via \code{...}
-\itemize{
-\item See all \href{https://github.com/rstudio/bslib/blob/master/inst/lib/bs/scss/_variables.scss}{Bootstrap 4 variables}
-\item See all \href{https://github.com/rstudio/bslib/blob/master/inst/lib/bs-sass/assets/stylesheets/bootstrap/_variables.scss}{Bootstrap 3 variables}
-}
+\item Customize other, lower-level, Bootstrap Sass variable defaults via \code{...}.
 }
 
-For less common theming customization(s), you can modify theme objects to:
-\itemize{
-\item Add additional Sass/CSS rules (see \code{\link[=bs_add_rules]{bs_add_rules()}} and \code{\link[=sass_partial]{sass_partial()}}).
-\item Leverage (new) Sass functions and mixins in those rules (see
-\code{\link[=bs_add_declarations]{bs_add_declarations()}})
-}
-
-These lower-level theming tools build on the concept of a
-\code{\link[sass:sass_layer]{sass::sass_layer()}}. To learn more, \href{https://rstudio.github.io/sass/articles/sass.html#composable-sass}{see here}.
+To learn more about how to implement custom themes, as well as how to use them inside Shiny and R Markdown, \href{https://rstudio.github.io/bslib/articles/bslib.html}{see here}.
 }
 \section{Colors}{
 
@@ -160,7 +145,7 @@ However, specifying multiple "fallback" font families is recommended,
 especially when relying on remote and/or system fonts being available, for
 instance. Fallback fonts are useful not only for handling missing fonts, but
 also for handling a Flash of Invisible Text (FOIT) which can be quite
-noticeable with remote web fonts on a slow internet connection.\preformatted{bs_theme(base_font = list(font_google("Pacifico", local = FALSE), "Roboto", "sans-serif")
+noticeable with remote web fonts on a slow internet connection.\preformatted{bs_theme(base_font = font_collection(font_google("Pacifico", local = FALSE), "Roboto", "sans-serif")
 }
 }
 
@@ -189,7 +174,7 @@ theme <- theme \%>\%
 
 }
 \references{
-\url{https://getbootstrap.com/docs/4.4/getting-started/theming/}
+\url{https://rstudio.github.io/bslib/articles/bslib.html}
 
 \url{https://rstudio.github.io/sass/}
 }

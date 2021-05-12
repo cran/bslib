@@ -1,8 +1,8 @@
 library(stringr)
 
-if (Sys.getenv("RSTUDIO") == "1") {
-  stop("Please run this script from the command line: `Rscript tools/fonts.R`")
-}
+# if (Sys.getenv("RSTUDIO") == "1") {
+#   stop("Please run this script from the command line: `Rscript tools/fonts.R`")
+# }
 
 # TODO: make sure this isn't drastically different from 2.1 Mb
 fonts_home <- file.path("inst", "fonts")
@@ -27,11 +27,11 @@ download_and_copy_fonts <-  function(theme) {
   }
   web_font_url <- gsub('(^")|("$)', '', web_font_url)
   css_file <- file.path(theme, "font.css")
-  css <- read_gfont_url(web_font_url, css_file)
-  urls <- extract_group(css, "url\\(([^)]+)")
+  css <- sass:::read_gfont_url(web_font_url, css_file)
+  urls <- sass:::extract_group(css, "url\\(([^)]+)")
   basenames <- basename(urls)
   Map(function(url, nm) {
-    download_file(url, file.path(fonts_home, nm))
+    sass:::download_file(url, file.path(fonts_home, nm))
     css <<- sub(url, file.path("fonts", nm), css, fixed = TRUE)
   }, urls, basenames)
   writeLines(css, css_file)

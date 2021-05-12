@@ -11,7 +11,8 @@ if (Sys.which("yarn") == "") {
   stop("The yarn CLI must be installed and in your PATH")
 }
 
-withr::with_dir("inst", system("yarn install"))
+# only install the direct deps
+withr::with_dir("inst", system("yarn install --production"))
 
 
 unlink("inst/lib", recursive = TRUE)
@@ -72,7 +73,8 @@ add_property_prefixes <- function(src, property, ok_values = NULL, vendors = c("
 # Unconditionally prefix the following CSS properties
 needs_prefix <- c(
   "appearance", "user-select", "backdrop-filter",
-  "backface-visibility", "touch-action"
+  "backface-visibility", "touch-action",
+  "animation-duration"
 )
 for (prop in needs_prefix) {
   scss_src <- lapply(scss_src, add_property_prefixes, prop)
@@ -299,16 +301,113 @@ unlink(file.path("inst", "lib", ".yarn-integrity"))
 # Apply any patches to source
 # ----------------------------------------------------------------------
 
-patch_dir <- find_package_root_file("tools/patches")
-for (patch in list.files(patch_dir, full.names = TRUE)) {
+patch_files <- list.files(
+  find_package_root_file("tools/patches"),
+  full.names = TRUE
+)
+
+for (patch in patch_files) {
   tryCatch(
     {
       message(sprintf("Applying %s", basename(patch)))
-      system(sprintf("git apply '%s'", patch))
+      rej_pre <- dir(pattern = "\\.rej$", recursive = TRUE)
+      system(sprintf("git apply --reject --whitespace=fix '%s'", patch))
+      rej_post <- dir(pattern = "\\.rej$", recursive = TRUE)
+      if (length(rej_post) > length(rej_pre)) {
+        stop(
+          "Running `git apply --reject` generated `.rej` files.\n",
+          "Please fix the relevant conflicts inside ", patch, "\n",
+          "An 'easy' way to do this is to first `git add` the new source changes, ",
+          "then manually make the relevant changes from the patch file,",
+          "then `git diff` to get the relevant diff output and update the patch diff with the new diff."
+        )
+      }
     },
-    error = function(e) quit(save = "no", status = 1)
+    error = function(e) {
+      stop(conditionMessage(e))
+      quit(save = "no", status = 1)
+    }
   )
 }
+
+# Tracking changes in solar isn't so important since we've basically
+# re-implemented it using a proper color system
+writeLines(
+  sass::as_sass(list(
+    "white" = "#092B36 !default",
+    "gray-100" = "#173741 !default",
+    "gray-200" = "#25434B !default",
+    "gray-300" = "#324E56 !default",
+    "gray-400" = "#405A61 !default",
+    "gray-500" = "#4E666B !default",
+    "gray-600" = "#5C7276 !default",
+    "gray-700" = "#6A7E81 !default",
+    "gray-800" = "#77898C !default",
+    "gray-900" = "#859596 !default",
+    "black" = "#93A1A1 !default",
+    "blue" = "#b58900 !default",
+    "indigo" = "#6610f2 !default",
+    "purple" = "#6f42c1 !default",
+    "pink" = "#e83e8c !default",
+    "red" = "#d33682 !default",
+    "orange" = "#fd7e14 !default",
+    "yellow" = "#cb4b16 !default",
+    "green" = "#2aa198 !default",
+    "teal" = "#20c997 !default",
+    "cyan" = "#268bd2 !default",
+    "enable-gradients" = "true !default",
+    "secondary" = "$gray-800 !default",
+    # Darker green and lighter green than `$black` and `$white`
+    "color-contrast-dark" = "#031014 !default",
+    "color-contrast-light" = "#BBD0D0 !default"
+  )),
+  "inst/lib/bsw/dist/solar/_variables.scss"
+)
+writeLines(
+  c(
+    '$web-font-path: "https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" !default;',
+    '@import url($web-font-path);'
+  ),
+  "inst/lib/bsw/dist/solar/_bootswatch.scss"
+)
+
+# ----------------------------------------------------------------------
+# Apply minification to patched files
+# ----------------------------------------------------------------------
+
+withr::with_dir("inst", {
+  local({
+    # install all deps
+    system("yarn install")
+    # remove node modules
+    on.exit({
+      unlink("node_modules", recursive = TRUE)
+    }, add = TRUE)
+
+    bslib_plugin_paths <- file.path(
+      "lib", "bs-a11y-p", "plugins", "js", c(
+        "bootstrap-accessibility.js"
+      ))
+
+    for (unminified_file in c(
+      bslib_plugin_paths
+    )) {
+      message("Minifying ", basename(unminified_file))
+      cmd <- paste0(
+        "yarn parcel",
+        " build ", unminified_file,
+        " --no-source-maps",
+        " --no-cache",
+        " --out-dir ", dirname(unminified_file),
+        " --out-file ", sub(".js", ".min.js", fixed = TRUE, basename(unminified_file))
+      )
+
+      system(cmd)
+    }
+
+  })
+
+})
 
 
 # ----------------------------------------------------------------------
@@ -338,4 +437,12 @@ lapply(versions(), function(version) {
     dir.create(dest_dir)
   }
   file.copy(tmp_css, dest_dir)
+})
+
+
+# ----------------------------------------------------------------------
+# Cleanup
+# ----------------------------------------------------------------------
+withr::with_dir("inst", {
+  unlink("yarn.lock")
 })

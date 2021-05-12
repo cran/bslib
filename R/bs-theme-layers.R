@@ -77,7 +77,6 @@ bs_add_variables <- function(theme, ..., .where = "defaults", .default_flag = id
 
   vars <- rlang::list2(...)
   if (any(names2(vars) == "")) stop("Variables must be named.", call. = FALSE)
-  .where <- match.arg(.where, c("defaults", "declarations", "rules"))
 
   # Workaround to the problem of 'blue' winning in the scenario of:
   # bs_add_variables("body-bg" = "blue")
@@ -95,14 +94,27 @@ bs_add_variables <- function(theme, ..., .where = "defaults", .default_flag = id
 # searches each variable's expression for a !default flag,
 # and if missing, adds it.
 ensure_default_flag <- function(x) {
-  lapply(x, function(val) {
-    val <- paste(as_sass(val), collapse = "\n")
-    if (grepl("!default\\s*;*\\s*$", val)) {
-      val
-    } else {
-      paste(sub(";+$", "", val), "!default")
+  Map(
+    x, rlang::names2(x),
+    f = function(val, nm) {
+      # sass::font_collection() has it's own default_flag, so warn if they conflict
+      if (sass::is_font_collection(val)) {
+        if (identical(val$default_flag, FALSE)) {
+          message(
+            "Ignoring `bs_add_variables()`'s `.default_flag = TRUE` for ",
+            "the ", nm, " variable (since it has it's own `default_flag`)."
+          )
+        }
+        return(val)
+      }
+      val <- paste(as_sass(val), collapse = "\n")
+      if (grepl("!default\\s*;*\\s*$", val)) {
+        val
+      } else {
+        paste(sub(";+$", "", val), "!default")
+      }
     }
-  })
+  )
 }
 
 #' @describeIn bs_bundle Add additional [Sass rules](https://sass-lang.com/documentation/style-rules)
@@ -113,11 +125,22 @@ bs_add_rules <- function(theme, rules) {
   bs_bundle(theme, sass_layer(rules = rules))
 }
 
-#' @describeIn bs_bundle Add Sass [functions](https://sass-lang.com/documentation/at-rules/function) and [mixins](https://sass-lang.com/documentation/at-rules/mixin)
-#' @param declarations Sass functions and mixins.
+#' @describeIn bs_bundle Add additional [Sass
+#'   functions](https://rstudio.github.io/sass/articles/sass.html#functions-1)
+#' @param functions A character vector or [sass::sass_file()] containing
+#'   functions definitions.
 #' @export
-bs_add_declarations <- function(theme, declarations) {
-  bs_bundle(theme, sass_layer(declarations = declarations))
+bs_add_functions <- function(theme, functions) {
+  bs_bundle(theme, sass_layer(functions = functions))
+}
+
+#' @describeIn bs_bundle Add additional [Sass
+#'   mixins](https://rstudio.github.io/sass/articles/sass.html#mixins-1)
+#' @param mixins A character vector or [sass::sass_file()] containing
+#'   mixin definitions.
+#' @export
+bs_add_mixins <- function(theme, mixins) {
+  bs_bundle(theme, sass_layer(mixins = mixins))
 }
 
 #' @describeIn bs_bundle Add additional [sass::sass_bundle()] objects to an existing `theme`.
