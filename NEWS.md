@@ -1,3 +1,7 @@
+# bslib 0.2.5.1
+
+Small patch release to fix failing test on Solaris.
+
 # bslib 0.2.5
 
 ## New features and improvements

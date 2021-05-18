@@ -1,8 +1,8 @@
-bf3011de0d214cfb176a4e5e0da31ab4 *DESCRIPTION
+03cda183be24c87160ac7e6b5368d056 *DESCRIPTION
 13c800bd317042f82b64c91f558873cf *LICENSE
 7efd689941ebb1b6c6d7489a8aaf46ca *LICENSE.note
 1b740bc2f16ec724ef819dc3da9fe4d1 *NAMESPACE
-df0aaab99af18e3be6048c7b2d3691f9 *NEWS.md
+1b20eef40fa6b99f5b44a17cc7346147 *NEWS.md
 36f72e2c95ea1c2ca8d1f23abb73d3b4 *R/bootswatch.R
 d57e69d00e9eee71efe4b889bcd3a13e *R/bs-current-theme.R
 16a73a28b1745696be6ce50c4bb6f186 *R/bs-dependencies.R
@@ -495,7 +495,7 @@ eb96d5079ddaafbfc95cc5cbf1f5775f *tests/testthat/helper-css.R
 ed9b642138fa93d0955639156944d5a3 *tests/testthat/test-fonts.R
 b1999abc36f34a34073139c741ffb94a *tests/testthat/test-global.R
 9e1f238aec456e8e683a3687a7d6b4f7 *tests/testthat/test-remove.R
-e6dd96db65dfa8c07fec53a6f5793b6b *tests/testthat/test-rmd-skeletons.R
+6ff325a60683d32072e8d3a19dbd769b *tests/testthat/test-rmd-skeletons.R
 978f76889461aa704d590b2a944224be *tests/testthat/test-shiny-devmode.R
 fcbe2146410b73a092311045df5f5567 *tests/testthat/test-theme-base-colors.R
 ecd6be6bb4d270ef7a3afccaf525ee69 *tests/testthat/test-theme-bootswatch.R
