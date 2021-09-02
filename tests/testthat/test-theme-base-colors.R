@@ -51,8 +51,8 @@ test_that("bs3 base colors", {
       `brand-primary` = "#0000FF")
   )
 
-  theme <- expect_warning(
-    bs_theme("3", bg = "#112233", fg = "#FFEEDD", primary = "orange", secondary = "brown"),
+  expect_warning(
+    theme <- bs_theme("3", bg = "#112233", fg = "#FFEEDD", primary = "orange", secondary = "brown"),
     "doesn't support.*ignored"
   )
   colors <- bs_get_variables(theme, varnames)
@@ -109,9 +109,9 @@ test_that("bs3 accent colors", {
       `brand-danger` = "#d9534f")
   )
 
-  theme <- expect_warning(
-    bs_theme("3", primary = "#123", secondary = "#234",
-             success = "#345", info = "#456", warning = "#567", danger = "#678"),
+  expect_warning(
+    theme <- bs_theme("3", primary = "#123", secondary = "#234",
+                      success = "#345", info = "#456", warning = "#567", danger = "#678"),
     "doesn't support"
   )
   expect_identical(bs_get_variables(theme, varnames),
@@ -213,22 +213,11 @@ test_that("theme-color('default') works as expected", {
     ".foo{color:theme-color('default')}", bs_theme(version = 4, secondary = "red")
   )
   expect_css(css, ".foo{color:#FF0000;}")
-  # and is removed completely without bs3compat
-  css <- sass::sass_partial(
-    ".foo{color:theme-color('default')}", bs_theme(version = 4) %>% bs_remove("bs3compat")
-  )
-  expect_css(css, "")
   expect_error(
     sass::sass(
       list(bs_theme(), ".foo { @extend .bg-default; }")
     ),
     NA
-  )
-  expect_error(
-    sass::sass(
-      list(bs_theme() %>% bs_remove("bs3compat"), ".foo { @extend .bg-default; }")
-    ),
-    "bg-default"
   )
 })
 

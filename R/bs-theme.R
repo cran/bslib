@@ -107,9 +107,8 @@
 #'
 #' # Lower-level bs_add_*() functions allow you to work more
 #' # directly with the underlying Sass code
-#' theme <- theme %>%
-#'   bs_add_variables("my-class-color" = "red") %>%
-#'   bs_add_rules(".my-class { color: $my-class-color }")
+#' theme <- bs_add_variables(theme, "my-class-color" = "red")
+#' theme <- bs_add_rules(theme, ".my-class { color: $my-class-color }")
 #'
 #' @export
 bs_theme <- function(version = version_default(), bootswatch = NULL, ...,
@@ -117,13 +116,11 @@ bs_theme <- function(version = version_default(), bootswatch = NULL, ...,
                      success = NULL, info = NULL, warning = NULL, danger = NULL,
                      base_font = NULL, code_font = NULL, heading_font = NULL,
                      font_scale = NULL) {
+
   theme <- bs_bundle(
     bs_theme_init(version, bootswatch),
     bootstrap_bundle(version),
-    bootswatch_bundle(bootswatch, version),
-    # Always include color-contrast() so we can support bs_get_contrast()
-    # for any version, and so 3rd party bslib extensions can always use it
-    color_contrast_layer()
+    bootswatch_bundle(bootswatch, version)
   )
   bs_theme_update(
     theme, ...,
@@ -160,7 +157,7 @@ bs_theme_update <- function(theme, ..., bootswatch = NULL, bg = NULL, fg = NULL,
     }
     if (!identical(bootswatch, "default")) {
       theme <- add_class(theme, bootswatch_class(bootswatch))
-      theme <- bs_bundle(theme, bootswatch_bundle(bootswatch, theme_version(theme)), color_contrast_layer())
+      theme <- bs_bundle(theme, bootswatch_bundle(bootswatch, theme_version(theme)))
     }
   }
   # See R/bs-theme-update.R for the implementation of these
@@ -214,7 +211,7 @@ is_bs_theme <- function(x) {
 # theme_version() & theme_bootswatch() search for
 bs_theme_init <- function(version, bootswatch = NULL) {
   add_class(
-    sass_bundle(),
+    sass_layer(defaults = list("bootstrap-version" = version)),
     c(
       bootswatch_class(bootswatch),
       paste0("bs_version_", version),
@@ -233,34 +230,55 @@ assert_bs_theme <- function(theme) {
   }
   invisible(theme)
 }
-# -----------------------------------------------------------------
-# Color contrast layer
-# -----------------------------------------------------------------
-
-color_contrast_layer <- function() {
-  sass_layer(
-    defaults = sass_file(
-      system_file("sass-utils/color-contrast.scss", package = "bslib")
-    )
-  )
-}
 
 # -----------------------------------------------------------------
 # Core Bootstrap bundle
 # -----------------------------------------------------------------
 
 bootstrap_bundle <- function(version) {
-  switch_version(
+  pandoc_tables <- list(
+    # Pandoc uses align attribute to align content but BS4 styles take precedence...
+    # we may want to consider adopting this more generally in "strict" BS4 mode as well
+    ".table th[align=left] { text-align: left; }",
+    ".table th[align=right] { text-align: right; }",
+    ".table th[align=center] { text-align: center; }"
+  )
+
+  main_bundle <- switch_version(
     version,
-    four = sass_bundle(
+    five = sass_bundle(
       # Don't name this "core" bundle so it can't easily be removed
       sass_layer(
-        defaults = bs4_sass_files(c("deprecated", "functions", "variables")),
+        functions = bs5_sass_files("functions"),
+        defaults = bs5_sass_files("variables"),
+        mixins = bs5_sass_files("mixins")
+      ),
+      # Returns a _named_ list of bundles (i.e., these should be easily removed)
+      !!!rule_bundles(
+        # Names here should match https://github.com/twbs/bs5/blob/master/scss/bootstrap.scss
+        bs5_sass_files(c(
+          "utilities",
+          "root", "reboot", "type", "images", "containers", "grid",
+          "tables", "forms", "buttons", "transitions", "dropdown",
+          "button-group", "nav", "navbar", "card", "accordion", "breadcrumb",
+          "pagination", "badge", "alert", "progress", "list-group", "close",
+          "toasts", "modal", "tooltip", "popover", "carousel", "spinners",
+          "offcanvas", "helpers", "utilities/api"
+        ))
+      ),
+      # Additions to BS5 that are always included (i.e., not a part of compatibility)
+      sass_layer(rules = pandoc_tables),
+      bs3compat = bs3compat_bundle()
+    ),
+    four = sass_bundle(
+      sass_layer(
+        functions = bs4_sass_files(c("deprecated", "functions")),
+        defaults = bs4_sass_files("variables"),
         mixins = bs4_sass_files("mixins")
       ),
       # Returns a _named_ list of bundles (i.e., these should be easily removed)
       !!!rule_bundles(
-        # Names here should match https://github.com/twbs/bootstrap/blob/master/scss/bootstrap.scss
+        # Names here should match https://github.com/twbs/bs4/blob/master/scss/bootstrap.scss
         bs4_sass_files(c(
           "root", "reboot", "type", "images", "code", "grid", "tables",
           "forms", "buttons", "transitions", "dropdown", "button-group",
@@ -271,15 +289,7 @@ bootstrap_bundle <- function(version) {
         ))
       ),
       # Additions to BS4 that are always included (i.e., not a part of compatibility)
-      sass_layer(
-        rules = list(
-          # Pandoc uses align attribute to align content but BS4 styles take precedence...
-          # we may want to consider adopting this more generally in "strict" BS4 mode as well
-          ".table th[align=left] { text-align: left; }",
-          ".table th[align=right] { text-align: right; }",
-          ".table th[align=center] { text-align: center; }"
-        )
-      ),
+      sass_layer(rules = pandoc_tables),
       bs3compat = bs3compat_bundle()
     ),
     three = sass_bundle(
@@ -302,9 +312,25 @@ bootstrap_bundle <- function(version) {
       glyphicon_font_files = sass_layer(
         defaults = list("icon-font-path" = "'glyphicon-fonts/'"),
         file_attachments = c(
-          "glyphicon-fonts" = lib_file("bs-sass", "assets", "fonts", "bootstrap")
+          "glyphicon-fonts" = lib_file("bs3", "assets", "fonts", "bootstrap")
         )
       )
+    )
+  )
+
+  sass_bundle(
+    main_bundle,
+    # color-contrast() was introduced in Bootstrap 5.
+    # We include our own version for a few reasons:
+    # 1. Easily turn off warnings options(bslib.color_contrast_warnings=F)
+    # 2. Allow Bootstrap 3 & 4 to use color-contrast() in variable definitions
+    # 3. Allow Bootstrap 3 & 4 to use bs_get_contrast()
+    sass_layer(
+      functions = sass_file(system_file("sass-utils/color-contrast.scss", package = "bslib"))
+    ),
+    # nav_spacer() CSS (can be removed)
+    nav_spacer = sass_layer(
+      rules = sass_file(system_file("nav-spacer/nav-spacer.scss", package = "bslib"))
     )
   )
 }
@@ -313,14 +339,16 @@ bootstrap_bundle <- function(version) {
 bootstrap_javascript_map <- function(version) {
   switch_version(
     version,
-    four = lib_file("bs", "dist", "js", "bootstrap.bundle.min.js.map")
+    five = lib_file("bs5", "dist", "js", "bootstrap.bundle.min.js.map"),
+    four = lib_file("bs4", "dist", "js", "bootstrap.bundle.min.js.map")
   )
 }
 bootstrap_javascript <- function(version) {
   switch_version(
     version,
-    four = lib_file("bs", "dist", "js", "bootstrap.bundle.min.js"),
-    three = lib_file("bs-sass", "assets", "javascripts", "bootstrap.min.js")
+    five = lib_file("bs5", "dist", "js", "bootstrap.bundle.min.js"),
+    four = lib_file("bs4", "dist", "js", "bootstrap.bundle.min.js"),
+    three = lib_file("bs3", "assets", "javascripts", "bootstrap.min.js")
   )
 }
 
@@ -336,13 +364,13 @@ bs3compat_bundle <- function() {
     rules = sass_file(system_file("bs3compat", "_rules.scss", package = "bslib")),
     # Gyliphicon font files
     file_attachments = c(
-      fonts = lib_file("bs-sass", "assets", "fonts")
+      fonts = lib_file("bs3", "assets", "fonts")
     ),
     html_deps = htmltools::htmlDependency(
       "bs3compat", packageVersion("bslib"),
       package = "bslib",
       src = "bs3compat/js",
-      script = c("tabs.js", "bs3compat.js")
+      script = c("transition.js", "tabs.js", "bs3compat.js")
     )
   )
 }
@@ -425,7 +453,12 @@ bootswatch_bundle <- function(bootswatch, version) {
         # https://github.com/rstudio/bootscss/blob/023d455/inst/node_modules/bootswatch/dist/sketchy/_bootswatch.scss#L204
         if (identical(bootswatch, "sketchy")) ".dropdown-menu{ overflow: inherit; }" else "",
         # TODO: is this really needed? Why isn't it listening to a Sass var?
-        if (identical(bootswatch, "lumen")) ".navbar.navbar-default {background-color: #f8f8f8 !important;}" else ""
+        if (identical(bootswatch, "lumen")) ".navbar.navbar-default {background-color: #f8f8f8 !important;}" else "",
+        # Several Bootswatch themes (e.g., zephyr, simplex, etc) add custom .btn-secondary
+        # rules that should also apply to .btn-default
+        ".btn-default:not(.btn-primary):not(.btn-info):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-dark):not(.btn-outline-primary):not(.btn-outline-info):not(.btn-outline-success):not(.btn-outline-warning):not(.btn-outline-danger):not(.btn-outline-dark) {
+          @extend .btn-secondary !optional;
+        }"
       )
     )
   )
