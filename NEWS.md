@@ -1,3 +1,13 @@
+# bslib 0.3.1
+
+## New features
+
+* Upgraded Bootstrap 5 (i.e., `bs_theme(version = 5)`) from 5.0.2 to 5.1.0 (#365)
+
+## Bug fixes
+
+* Closed rstudio/shiny#3519: `nav_menu()` (i.e., `shiny::navbarMenu()`) wasn't producing an `.active` class on it's `.dropdown` container properly. (#372)
+
 # bslib 0.3.0
 
 ## Breaking changes

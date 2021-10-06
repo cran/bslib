@@ -1,6 +1,6 @@
 Package: bslib
 Title: Custom 'Bootstrap' 'Sass' Themes for 'shiny' and 'rmarkdown'
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@rstudio.com", comment = c(ORCID = "0000-0002-4958-2844")),
     person("Joe", "Cheng", role = "aut", email = "joe@rstudio.com"),
@@ -24,7 +24,7 @@ Suggests: shiny (>= 1.6.0), rmarkdown (>= 2.7), thematic, knitr,
         testthat, withr, rappdirs, curl, magrittr
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Config/testthat/edition: 3
 Collate: 'bootswatch.R' 'bs-current-theme.R' 'bs-dependencies.R'
         'bs-global.R' 'bs-remove.R' 'bs-theme-layers.R' 'utils.R'
@@ -35,8 +35,9 @@ Collate: 'bootswatch.R' 'bs-current-theme.R' 'bs-dependencies.R'
         'utils-tags.R' 'version-default.R' 'versions.R'
 URL: https://rstudio.github.io/bslib/, https://github.com/rstudio/bslib
 BugReports: https://github.com/rstudio/bslib/issues
+Config/Needs/website: rsconnect, renv, r-lib/pkgdown, apreshill/quillt
 NeedsCompilation: no
-Packaged: 2021-09-01 21:39:14 UTC; cpsievert
+Packaged: 2021-10-06 14:12:58 UTC; cpsievert
 Author: Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),
   Joe Cheng [aut],
   RStudio [cph],
@@ -47,4 +48,4 @@ Author: Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),
   PayPal [ctb, cph] (Bootstrap accessibility plugin)
 Maintainer: Carson Sievert <carson@rstudio.com>
 Repository: CRAN
-Date/Publication: 2021-09-02 14:50:41 UTC
+Date/Publication: 2021-10-06 15:10:05 UTC
