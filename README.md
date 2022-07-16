@@ -6,7 +6,7 @@ status](https://www.r-pkg.org/badges/version/bslib)](https://cran.r-project.org/
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R build
-status](https://github.com/rstudio/bslib/workflows/R-CMD-check/badge.svg)](https://github.com/rstudio/bslib/actions)
+status](https://github.com/rstudio/bslib/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/bslib/actions)
 
 <!-- badges: end -->
 
@@ -39,7 +39,7 @@ goals are:
     packages.
       - Extensions such as
         [`flexdashboard`](https://flexdashboard-pkg.netlify.app/articles/theme.html),
-        [`pkgdown`](https://pkgdown.r-lib.org/dev/articles/customization.html),
+        [`pkgdown`](https://pkgdown.r-lib.org/dev/articles/customise.html),
         and
         [`bookdown`](https://pkgs.rstudio.com/bookdown/reference/bs4_book.html)
         already fully support [`bslib`’s custom theming
@@ -77,14 +77,14 @@ For example, most Shiny page layout functions (e.g.,
 To use `bslib` in Shiny, provide a `bs_theme()` *object* to the `theme`
 parameter; and in R Markdown, provide `bs_theme()` *parameters* to
 `theme`. For example, here’s a way to upgrade Shiny (left) and R
-Markdown (right) from Bootstrap 3 to 4:
+Markdown (right) from Bootstrap 3 to 5:
 
 <div class="usage">
 
 ``` r
 library(shiny)
 ui <- navbarPage(
-  theme = bs_theme(version = 4),
+  theme = bs_theme(version = 5),
   ...
 )
 shinyApp(ui, function(...) {})
@@ -95,7 +95,7 @@ shinyApp(ui, function(...) {})
 output:
   html_document:
     theme:
-      version: 4
+      version: 5
 ---
 ```
 
@@ -132,5 +132,5 @@ There are two main places to get help with `bslib`:
 
 Please note that the bslib project is released with a [Contributor Code
 of
-Conduct](https://github.com/rstudio/bslib/blob/master/CODE_OF_CONDUCT.md).
+Conduct](https://github.com/rstudio/bslib/blob/main/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
