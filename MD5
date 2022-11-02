@@ -1,8 +1,8 @@
-ff7ed7d0f345463dc8627308c1c6aee8 *DESCRIPTION
+d43bf4151203e947a5ee44a81e81fa75 *DESCRIPTION
 13c800bd317042f82b64c91f558873cf *LICENSE
 7efd689941ebb1b6c6d7489a8aaf46ca *LICENSE.note
 cb52ce3e5d1e1497e3be36dff94d17cb *NAMESPACE
-f0a17d12357bf8677603520c145bf539 *NEWS.md
+b4eef28c8ab316aa7bb4c16c732ea5a9 *NEWS.md
 785cc283f0ee4a519268da3d496ee21d *R/bootswatch.R
 b635661ad5cc75610c629d40df2fdd13 *R/bs-current-theme.R
 95c5d7405ed57377323ea57851936e02 *R/bs-dependencies.R
@@ -649,7 +649,7 @@ dcf8766a62928b51ba7eb7dcf0232602 *inst/themer-demo/app.R
 69aa2380772884ab18e1fbba08656ca1 *inst/themer/themer.js
 25177e4b5406bd3f41bfb93ca962a7db *inst/themer/themer.scss
 aaf5e8325e285885d6bc093ae9d722fb *man/bootswatch_themes.Rd
-c261ad9c8c84bed019cc233e9c3a811f *man/bs_bundle.Rd
+bfeaa66df4895e3805ad5fcb35eb55aa *man/bs_bundle.Rd
 01a168794e7e4c7d54ef9e6dbea35db4 *man/bs_current_theme.Rd
 d1df49834e66ee811c148720cc7a55a8 *man/bs_dependency.Rd
 909e86877ac437f84ad9d2d3b6511d9d *man/bs_get_variables.Rd
@@ -662,7 +662,7 @@ ba0bc7965ea8059a4fc3305afbd9b4a6 *man/bs_theme_preview.Rd
 c96ada8c0b8fe4717e75eab408be9e2c *man/figures/rstudio-templates.png
 06fc3c3a1e216867a4513c1a41d9464a *man/font_face.Rd
 cf6be3a829743034c6d0f6404b36e48a *man/html-browse.Rd
-d4bac1d0824f32ed966a736a3d3d837d *man/nav.Rd
+901222afa8f87ef4c6432922b2b2f1a7 *man/nav.Rd
 35822aa11e23870b5eb1fa7afc25f9a5 *man/nav_prepend.Rd
 304eb87fca286fba7f0663fd7bcd22ff *man/nav_select.Rd
 9d887fca098cd87c0367012a11356476 *man/navs.Rd
