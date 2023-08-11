@@ -61,13 +61,14 @@ card <- function(..., full_screen = FALSE, height = NULL, max_height = NULL, min
   children <- as_card_items(args[!nzchar(argnames)], wrapper = wrapper)
 
   tag <- div(
-    class = "card bslib-card bslib-mb-spacer",
+    class = "card bslib-card bslib-mb-spacing",
     style = css(
       height = validateCssUnit(height),
       max_height = validateCssUnit(max_height),
       min_height = validateCssUnit(min_height)
     ),
     "data-bslib-card-init" = NA,
+    "data-full-screen" = if (full_screen) "false",
     !!!attribs,
     !!!children,
     if (full_screen) full_screen_toggle(),
@@ -270,24 +271,25 @@ is.card_item <- function(x) {
 
 
 full_screen_toggle <- function() {
-  tags$span(
-    class = "bslib-full-screen-enter",
-    class = "badge rounded-pill bg-dark",
-    "data-bs-toggle" = "tooltip",
-    "data-bs-placement" = "bottom",
-    title = "Expand",
-    full_screen_toggle_icon()
+  tooltip(
+    tags$span(
+      class = "bslib-full-screen-enter",
+      class = "badge rounded-pill bg-dark",
+      full_screen_toggle_icon()
+    ),
+    "Expand"
   )
 }
 
 card_dependency <- function() {
-  htmlDependency(
-    name = "bslib-card",
-    version = get_package_version("bslib"),
-    package = "bslib",
-    src = "components",
-    script = "card.min.js"
+  list(
+    component_dependency_js("card"),
+    bs_dependency_defer(card_dependency_sass)
   )
+}
+
+card_dependency_sass <- function(theme) {
+  component_dependency_sass(theme, "card")
 }
 
 card_init_js <- function() {

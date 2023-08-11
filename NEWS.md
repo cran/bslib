@@ -1,3 +1,25 @@
+# bslib 0.5.1
+
+## New features
+
+* Added `tooltip()`, `update_tooltip()`, and `toggle_tooltip()` for easy creation (and server-side updating) of [Bootstrap tooltips](https://getbootstrap.com/docs/5.2/components/tooltips/) (a way to display additional information when focusing (or hovering over) a UI element). (#662)
+* Added `popover()`, `update_popover()`, and `toggle_popover()` for easy creation (and server-side updating) of [Bootstrap popovers](https://getbootstrap.com/docs/5.2/components/popovers/). Popovers are similar to tooltips, but are more persistent, and should primarily be used with button-like UI elements (e.g., `actionButton()`, `bsicons::bs_icon()`, etc). (#702)
+* Added `input_switch()` and `update_switch()` for easy creation (and server-side updating) of a [Bootstrap's switch input](https://getbootstrap.com/docs/5.2/forms/checks-radios/#switches) (an on-off toggle for binary input values). (#483)
+* Added two new toggle functions: `toggle_switch()` for toggling the state of an `input_switch()` element and `toggle_sidebar()` for toggling the state of a `sidebar()` element (`sidebar_toggle()` remains as an alias of `toggle_sidebar()`). (#709)
+
+## Improvements
+
+* Closed quarto-dev/quarto-cli#6081: `{bslib}`'s components (e.g., `card()`, `sidebar()`, etc.) now work more sensibly in Quarto docs. (#664)
+* Closed #672: `sidebar()` gains `gap` and `padding` arguments to control the vertical gap between items in the sidebar and the padding around the sidebar's content. (#725)
+
+## Bug fixes
+
+* Closed #636: Outputs in sidebars now work as expected when an initially-closed sidebar is opened. (#624)
+* Closed #640: `accordion()` no longer errors when an `id` isn't supplied inside a Shiny `session` context. (#646)
+* Closed #639: `nav_panel()`'s `icon` argument now supports generic `HTML()`, meaning that things like `bsicons::bs_icon()` and `fontawesome::fa()` can be used as values. (#645)
+* Light-styled buttons in bslib-provided Bootswatch themes are now consistent with their design in Bootswatch. Previously, they were inadvertently styled similarly to secondary buttons. (#687)
+* Closed #727: `layout_column_wrap()` now enforces equal column widths by avoiding layout issues caused by grid container overflow. (#729)
+
 # bslib 0.5.0
 
 This significant release focuses on making dashboards with filling/responsive layouts easier. See the new [Getting Started with Dashboards article](https://rstudio.github.io/bslib/articles/dashboards.html) to learn more. It also includes new components (`accordion()`) as well as many improvements and bug fixes for existing features and components.
@@ -20,10 +42,10 @@ This significant release focuses on making dashboards with filling/responsive la
 
 ## New features
 
-* Added `page_sidebar()`, for easy dashboard creation. (#588) 
-* Added a `sidebar()` API for creating sidebar layouts in various contexts. See [the article](https://rstudio.github.io/bslib/articles/sidebars.html) to learn more. (#479)
+* Added `page_sidebar()`, for easy dashboard creation. (#588)
+* Added a `sidebar()` API for creating sidebar layouts in various contexts. See [the article](https://rstudio.github.io/bslib/articles/sidebars/index.html) to learn more. (#479)
 * Added `layout_columns()`, for responsive column-based grid layouts. (#587)
-* Adds a new `accordion()` API. See `help(accordion)` for examples and details. Note also `accordion()` is designed to [work well inside a `sidebar()`](https://rstudio.github.io/bslib/articles/sidebars.html#sidebar-accordions). (#475)
+* Adds a new `accordion()` API. See `help(accordion)` for examples and details. Note also `accordion()` is designed to [work well inside a `sidebar()`](https://rstudio.github.io/bslib/articles/sidebars/index.html#sidebar-accordions). (#475)
 * `page_navbar()`, `navset_card_tab()`, and ` navset_card_pill()` gain a `sidebar` argument for putting a `sidebar()` on every page/tab/pill. (#479)
 * `page_navbar()` gains a `fillable` argument to make the content of particular page(s) fit the window/card. (#479)
 * `page_fillable()` (aka, `page_fill()`) is now considered a `fillable` container, meaning that `fill` items like `card()`, `layout_column_wrap()`, and `layout_sidebar()` now grow/shrink to fit the window's height when they appear as a direct child of `page_fillable()`. (#479)

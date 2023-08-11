@@ -281,7 +281,8 @@ navbarPage_ <- function(title,
   # *Don't* wrap in bootstrapPage() (shiny::navbarPage()) does that part
   tagList(
     tags$nav(class = navbarClass, role = "navigation", containerDiv),
-    contentDiv
+    contentDiv,
+    component_dependency_css("page_navbar")
   )
 }
 
@@ -294,7 +295,7 @@ navbarMenu_ <- function(title, ..., menuName = title, icon = NULL, align) {
       tabs = list2(...),
       # Here for legacy reasons
       # https://github.com/cran/miniUI/blob/74c87d3/R/layout.R#L369
-      iconClass = tagGetAttribute(icon, "class"),
+      iconClass = if (inherits(icon, "shiny.tag")) tagGetAttribute(icon, "class"),
       icon = icon,
       align = align
     ),
@@ -314,7 +315,7 @@ tabPanel_ <- function(title, ..., value = title, icon = NULL) {
     `data-value` = value,
     # Here for legacy reasons
     # https://github.com/cran/miniUI/blob/74c87d/R/layout.R#L395
-    `data-icon-class` = tagGetAttribute(icon, "class"),
+    `data-icon-class` = if (inherits(icon, "shiny.tag")) tagGetAttribute(icon, "class"),
     ...
   )
   attr(pane, "_shiny_icon") <- icon
@@ -439,21 +440,12 @@ findAndMarkSelectedTab <- function(tabs, selected, foundSelected) {
 }
 
 prepTabIcon <- function(x = NULL) {
-  if (is.null(x)) return(NULL)
-  if (!inherits(x, "shiny.tag")) {
-    stop(
-      "`icon` must be a `shiny.tag` object. ",
-      "Try passing `icon()` (or `tags$i()`) to the `icon` parameter.",
-      call. = FALSE
-    )
-  }
+  if (!inherits(x, "shiny.tag")) return(x)
 
   is_fa <- grepl("fa-", tagGetAttribute(x, "class") %||% "", fixed = TRUE)
-  if (!is_fa) {
-    return(x)
-  }
+  if (!is_fa) return(x)
 
-  # for font-awesome we specify fixed-width
+  # specify fixed-width for font-awesome
   tagAppendAttributes(x, class = "fa-fw")
 }
 

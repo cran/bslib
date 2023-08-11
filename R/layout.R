@@ -55,9 +55,9 @@ layout_column_wrap <- function(
 
   heights_equal <- match.arg(heights_equal)
 
-  args <- list_split_named(rlang::list2(...))
-  attribs <- args[["named"]]
-  children <- dropNulls(args[["unnamed"]])
+  args <- separate_arguments(...)
+  attribs <- args$attribs
+  children <- args$children
 
   if (length(width) > 1) {
     stop("`width` of length greater than 1 is not currently supported.")
@@ -69,7 +69,7 @@ layout_column_wrap <- function(
       if (num_cols != as.integer(num_cols)) {
         stop("Could not interpret width argument; see ?layout_column_wrap")
       }
-      paste0(rep_len("1fr", num_cols), collapse = " ")
+      sprintf("repeat(%s, minmax(0, 1fr))", num_cols)
     } else {
       if (fixed_width) {
         paste0("repeat(auto-fit, ", validateCssUnit(width), ")")
@@ -84,7 +84,7 @@ layout_column_wrap <- function(
   children <- lapply(children, grid_item_container, fillable = fillable)
 
   tag <- div(
-    class = "bslib-grid",
+    class = "bslib-grid bslib-mb-spacing",
     style = css(
       grid_template_columns = colspec,
       grid_auto_rows = if (heights_equal == "all") "1fr",
@@ -95,7 +95,8 @@ layout_column_wrap <- function(
       gap = validateCssUnit(gap)
     ),
     !!!attribs,
-    children
+    children,
+    component_dependency_css("grid")
   )
 
   tag <- bindFillRole(tag, item = fill)
@@ -188,9 +189,9 @@ layout_columns <- function(
   class = NULL,
   height = NULL
 ) {
-  args <- list_split_named(rlang::list2(...))
-  attribs <- args[["named"]]
-  children <- dropNulls(args[["unnamed"]])
+  args <- separate_arguments(...)
+  attribs <- args$attribs
+  children <- args$children
   n_kids <- length(children)
 
   # Resolve missing value(s) for col_widths, etc.
@@ -212,7 +213,7 @@ layout_columns <- function(
   )
 
   tag <- div(
-    class = "grid bslib-grid",
+    class = "bslib-grid grid bslib-mb-spacing",
     style = css(
       height = validateCssUnit(height),
       gap = validateCssUnit(gap),
@@ -220,7 +221,8 @@ layout_columns <- function(
     ),
     !!!row_heights_css_vars(row_heights),
     !!!attribs,
-    !!!children
+    !!!children,
+    component_dependency_css("grid")
   )
 
   tag <- bindFillRole(tag, item = fill)

@@ -54,6 +54,17 @@
 #'   viewed on mobile devices. The default is `250px` unless the sidebar is
 #'   included in a [layout_sidebar()] with a specified height, in which case
 #'   the default is to take up no more than 50% of the layout container.
+#' @param gap A [CSS length unit][htmltools::validateCssUnit()] defining the
+#'   vertical `gap` (i.e., spacing) between adjacent elements provided to `...`.
+#' @param padding Padding within the sidebar itself. This can be a numeric
+#'   vector (which will be interpreted as pixels) or a character vector with
+#'   valid CSS lengths. `padding` may be one to four values. If one, then
+#'   that value will be used for all four sides. If two, then the first value
+#'   will be used for the top and bottom, while the second value will be used
+#'   for left and right. If three, then the first will be used for top, the
+#'   second will be left and right, and the third will be bottom. If four, then
+#'   the values will be interpreted as top, right, bottom, and left
+#'   respectively.
 #'
 #' @export
 sidebar <- function(
@@ -66,7 +77,9 @@ sidebar <- function(
   bg = NULL,
   fg = NULL,
   class = NULL,
-  max_height_mobile = NULL
+  max_height_mobile = NULL,
+  gap = NULL,
+  padding = NULL
 ) {
   if (isTRUE(open)) {
     open <- "open"
@@ -122,8 +135,12 @@ sidebar <- function(
       class = c("sidebar", class),
       hidden = if (open == "closed") NA,
       tags$div(
-        class = "sidebar-content",
+        class = "sidebar-content bslib-gap-spacing",
         title,
+        style = css(
+          gap = validateCssUnit(gap),
+          padding = validateCssPadding(padding)
+        ),
         ...
       )
     ),
@@ -213,7 +230,7 @@ layout_sidebar <- function(
   sidebar_init <- if (!identical(sidebar$open, "always")) TRUE
 
   res <- div(
-    class = "bslib-sidebar-layout",
+    class = "bslib-sidebar-layout bslib-mb-spacing",
     class = if (right) "sidebar-right",
     class = if (identical(sidebar$open, "closed")) "sidebar-collapsed",
     `data-bslib-sidebar-init` = sidebar_init,
@@ -247,7 +264,7 @@ layout_sidebar <- function(
 #' @param session A Shiny session object (the default should almost always be
 #'   used).
 #' @export
-sidebar_toggle <- function(id, open = NULL, session = get_current_session()) {
+toggle_sidebar <- function(id, open = NULL, session = get_current_session()) {
   method <-
     if (is.null(open) || identical(open, "toggle")) {
       "toggle"
@@ -270,22 +287,16 @@ sidebar_toggle <- function(id, open = NULL, session = get_current_session()) {
   session$onFlush(callback, once = TRUE)
 }
 
+#' @describeIn sidebar An alias for [toggle_sidebar()].
+#' @export
+sidebar_toggle <- toggle_sidebar
+
 collapse_icon <- function() {
   if (!is_installed("bsicons")) {
     icon <- "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" class=\"bi bi-chevron-down collapse-icon\" style=\"fill:currentColor;\" aria-hidden=\"true\" role=\"img\" ><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"></path></svg>"
     return(HTML(icon))
   }
   bsicons::bs_icon("chevron-down", class = "collapse-icon", size = NULL)
-}
-
-sidebar_dependency <- function() {
-  htmlDependency(
-    name = "bslib-sidebar",
-    version = get_package_version("bslib"),
-    package = "bslib",
-    src = "components",
-    script = "sidebar.min.js"
-  )
 }
 
 sidebar_init_js <- function() {
@@ -297,3 +308,16 @@ sidebar_init_js <- function() {
     HTML("bslib.Sidebar.initCollapsibleAll()")
   )
 }
+
+
+sidebar_dependency <- function() {
+  list(
+    component_dependency_js("sidebar"),
+    bs_dependency_defer(sidebar_dependency_sass)
+  )
+}
+
+sidebar_dependency_sass <- function(theme) {
+  component_dependency_sass(theme, "sidebar")
+}
+
