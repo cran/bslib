@@ -1,6 +1,6 @@
 Package: bslib
 Title: Custom 'Bootstrap' 'Sass' Themes for 'shiny' and 'rmarkdown'
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: c(
     person("Carson", "Sievert", , "carson@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4958-2844")),
@@ -62,7 +62,7 @@ Collate: 'accordion.R' 'breakpoints.R' 'bs-current-theme.R'
         'utils-deps.R' 'utils-shiny.R' 'utils-tags.R' 'value-box.R'
         'version-default.R' 'versions.R'
 NeedsCompilation: no
-Packaged: 2023-11-21 20:29:03 UTC; cpsievert
+Packaged: 2023-11-28 17:50:21 UTC; cpsievert
 Author: Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),
   Joe Cheng [aut],
   Garrick Aden-Buie [aut] (<https://orcid.org/0000-0002-7111-0077>),
@@ -74,4 +74,4 @@ Author: Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),
   PayPal [ctb, cph] (Bootstrap accessibility plugin)
 Maintainer: Carson Sievert <carson@posit.co>
 Repository: CRAN
-Date/Publication: 2023-11-21 22:50:02 UTC
+Date/Publication: 2023-11-28 23:10:05 UTC
