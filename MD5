@@ -1,8 +1,8 @@
-72cffd4e36cb253f09a54b10df291e2f *DESCRIPTION
+53a413a1dc4fa98e551abcade81f3c4f *DESCRIPTION
 ff977da29d719193f4cd7cf39036780d *LICENSE
 7efd689941ebb1b6c6d7489a8aaf46ca *LICENSE.note
 5cfab1adf325d9209a9dea921e60cd34 *NAMESPACE
-163d1eb9ce7d040e6b37b5f2f9ca3b73 *NEWS.md
+c5248a12470566c9202ff10b350a1263 *NEWS.md
 59466644f8e9640304878279a4be19c8 *R/accordion.R
 d2faeb74fc7953882f0ccfa95117c823 *R/breakpoints.R
 6b80e3d5bbe6370a0d98174acb82483a *R/bs-current-theme.R
@@ -46,7 +46,7 @@ ff77a9eb5689cc0f8dc345069bdac06d *R/utils.R
 5998898382149f773148d79b2f0d54a3 *R/value-box.R
 863910939747d0b8ef789e1219e02f86 *R/version-default.R
 6e32d6710476651b405d266c600005e8 *R/versions.R
-88988dd5746f962784b0e7846aec9c99 *README.md
+524c98c78fbb7e990270735c7df8ca08 *README.md
 38553ce8b48a3c20e9ba2b6bab14e534 *inst/bs3compat/_declarations.scss
 611fb3885741ee002af5d6c6c3550660 *inst/bs3compat/_defaults.scss
 70701b3b39e63d28b1aa0719ce5e2d39 *inst/bs3compat/_dropdown_compat.scss
@@ -834,7 +834,7 @@ eb96d5079ddaafbfc95cc5cbf1f5775f *tests/testthat/helper-css.R
 278718ea879f5b3c5e9d5d9a17b35354 *tests/testthat/test-bs-theme-preset.R
 e4d0ca13f084f8de7344893ec196d2fb *tests/testthat/test-bs-theme.R
 b23bcb0cd91b3ba5eec48090fe88147f *tests/testthat/test-bs4-deps.R
-c792b345c92e2fe7b639ed7e7e84e604 *tests/testthat/test-fill.R
+1094e701732e04232f2659b09d051345 *tests/testthat/test-fill.R
 ed9b642138fa93d0955639156944d5a3 *tests/testthat/test-fonts.R
 4a3afd252f2086258dbe02722a7a8781 *tests/testthat/test-global.R
 faa0470c1d687fd10e1bc39cb6e977eb *tests/testthat/test-layout.R
