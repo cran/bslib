@@ -1,3 +1,44 @@
+# bslib 0.8.0
+
+## Breaking changes
+
+* To help reduce the potential for squashed content, the main content area of `page_sidebar()` and `page_navbar()` with a `sidebar` now have a (customizable) minimum height and width on a "medium-sized" window. To revert to previous behavior, set `theme = bs_theme("bslib-page-main-min-height" = "unset", "bslib-page-main-min-width" = "unset")`. (#1057, #1059, #1084)
+
+* `card_image()` had a couple breaking changes (#1076):
+  * `fill` now defaults to `FALSE` to avoid stretching/shrinking the image vertically (and thus, changing it's aspect ratio). To restore the previous behavior, set `fill = TRUE`.
+  * `container` now defaults to `NULL` instead of `card_body`. As a result, `card_image()` no longer has padding around it, making it easier to create "full-bleed" card images ([for example](https://getbootstrap.com/docs/5.3/components/card/#images)). To restore the previous behavior, wrap `card_image()` in a `card_body()`.
+
+## New features
+
+* `card_image()` gains several new features (#1076):
+    * `alt` is now a formal argument and is set to `""` by default. This default value marks images as decorative; please describe the image in the `alt` attribute if it is not decorative.
+    * `border_radius` now defaults to `"auto"` by default, in which case the image's position in the card will automatically determine whether it should receive the `.card-img-top` (first child), `.card-img-bottom` (last child) or `.card-img` (only child).
+    * `file` is designed to accept a path to a local (server-side) file, but now recognizes remote files that start with a protocol prefix, e.g. `https://`, or two slashes, e.g. `//`. Local files are base64-encoded and embedded in the HTML output, while remote files are linked directly. To use a relative path for a file that will be served by the Shiny app, use `src` instead of file, e.g. `card_image(src = "cat.jpg")` where `cat.jpg` is stored in `www/`.
+
+* The `open` argument of `sidebar()` now includes the option to place a sidebar that's always open on mobile screens _above the main content_ with `open = list(mobile = "always-above")`. (#1088)
+
+## Improvements
+    
+* Adjusted the border color of checkbox and radio buttons to match the border color of the input group in `bs_theme(preset="shiny")`. (#1038)
+
+* On mobile, the main and sidebar content areas of a `layout_sidebar()` no longer overlap with the sidebar toggle button. (#1084)
+
+* bslib now re-exports `htmltools::css()` to make it easier to specify style declarations. (#1086)
+
+* Example apps provided with bslib have now moved from `examples` to `examples-shiny` to take advantage of the new `package` argument in `shiny::runExample()` with shiny >= 1.8.1. For example, try `shiny::runExample("build-a-box", package = "bslib")`. (#1049)
+
+## Bug fixes
+
+* `toggle_sidebar()` once again correctly closes a sidebar. (@fredericva, #1043)
+
+* bslib now avoids re-defining its components when used in a context where they are already available, e.g. in a Quarto dashboard. (#1045)
+
+* Improved the appearance of cards with sidebars and headers in the Shiny preset, especially when custom card color themes are used, e.g. with `text-bg-primary` or other Bootstrap utility classes. (#1056)
+
+* When `card_body(fillable = FALSE)`, bslib now preserves flow-layout margin bottom settings. (#1073)
+
+* Fixed a bug in `layout_sidebar()` that caused a spurious and confusing error message. (#1081)
+
 # bslib 0.7.0
 
 This large release includes many improvements and bug fixes for newer UI components like `layout_columns()`, `card()`, and `sidebar()`. In addition, the new `input_task_button()` offers a drop-in replacement for `shiny::actionButton()` (to prevent multiple submissions of the same operation) as well as pairing nicely with the new `shiny::ExtendedTask` for implementing truly non-blocking operations in Shiny.
@@ -22,8 +63,8 @@ This large release includes many improvements and bug fixes for newer UI compone
 
   * Full-screen cards are now supported on mobile devices: the _Expand card_ button is revealed when a user taps on the card (thanks @Damonsoul, #961).
 
-  * The _Expand card_ button is now accessible via keyboard navigation and appropriate ARIA attributes connect the card with the expand and close buttons. 
-  
+  * The _Expand card_ button is now accessible via keyboard navigation and appropriate ARIA attributes connect the card with the expand and close buttons.
+
   * For JavaScript-oriented users, the expansion/collapse is now accompanied by a custom `bslib.card` event with the full screen state reported in the `event.detail.fullScreen` property. (#959)
 
 * Improvements to the default theme (i.e., Shiny preset):
