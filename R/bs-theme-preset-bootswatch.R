@@ -39,7 +39,6 @@ theme_version <- function(theme) {
   theme_preset_info(theme)$version
 }
 
-
 bootswatch_dist <- function(version) {
   switch_version(
     version,
@@ -49,13 +48,14 @@ bootswatch_dist <- function(version) {
   )
 }
 
-
 # -----------------------------------------------------------------
 # Bootswatch bundle
 # -----------------------------------------------------------------
 
 bootswatch_bundle <- function(bootswatch, version) {
-  if (!length(bootswatch) || isTRUE(bootswatch %in% c("default", "bootstrap"))) {
+  if (
+    !length(bootswatch) || isTRUE(bootswatch %in% c("default", "bootstrap"))
+  ) {
     return(NULL)
   }
 
@@ -65,11 +65,15 @@ bootswatch_bundle <- function(bootswatch, version) {
       switch(
         bootswatch,
         paper = {
-          message("Bootswatch 3 theme paper has been renamed to materia in version 4 (using that theme instead)")
+          message(
+            "Bootswatch 3 theme paper has been renamed to materia in version 4 (using that theme instead)"
+          )
           "materia"
         },
         readable = {
-          message("Bootswatch 3 theme readable has been renamed to litera in version 4 (using that theme instead)")
+          message(
+            "Bootswatch 3 theme readable has been renamed to litera in version 4 (using that theme instead)"
+          )
           "litera"
         },
         match.arg(bootswatch, bootswatch_themes(version))
@@ -96,9 +100,14 @@ bootswatch_bundle <- function(bootswatch, version) {
         # Use local fonts (this path is relative to the bootstrap HTML dependency dir)
         '$web-font-path: "font.css" !default;',
         bootswatch_sass_file(bootswatch, "variables", version),
-        # Unless we change navbarPage()'s markup, BS4+ will likely want BS3 compatibility
+        # BS4 navbars are matched with BS3 for compatibility
         switch_version(
-          version, three = "", default = bs3compat_navbar_defaults(bootswatch)
+          version,
+          three = "",
+          four = bs3compat_navbar_defaults(bootswatch),
+          # BS5 uses more neutral defaults (navbar that flips in light/dark mode)
+          # or requires a bit more user input
+          default = list()
         )
       ),
       rules = list(
@@ -106,7 +115,8 @@ bootswatch_bundle <- function(bootswatch, version) {
         # For some reason sketchy sets .dropdown-menu{overflow: hidden}
         # but this prevents .dropdown-submenu from working properly
         # https://github.com/rstudio/bootscss/blob/023d455/inst/node_modules/bootswatch/dist/sketchy/_bootswatch.scss#L204
-        if (identical(bootswatch, "sketchy")) ".dropdown-menu{ overflow: inherit; }" else "",
+        if (identical(bootswatch, "sketchy"))
+          ".dropdown-menu{ overflow: inherit; }" else "",
         # Several Bootswatch themes (e.g., zephyr, simplex, etc) add custom .btn-secondary
         # rules that should also apply to .btn-default
         ".btn-default:not(.btn-primary):not(.btn-info):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-dark):not(.btn-light):not([class*='btn-outline-']) {
@@ -116,7 +126,6 @@ bootswatch_bundle <- function(bootswatch, version) {
     )
   )
 }
-
 
 # Mappings from BS3 navbar classes to BS4
 bs3compat_navbar_defaults <- function(bootswatch) {
@@ -148,7 +157,6 @@ bs3compat_navbar_defaults <- function(bootswatch) {
     yeti = c("dark", "primary"),
     stop("Didn't recognize Bootswatch 3 theme: ", bootswatch, call. = FALSE)
   )
-
 
   list(
     sprintf('$navbar-light-bg: $%s !default;', bg_colors[1]),

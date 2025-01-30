@@ -1,8 +1,6 @@
 #' Add a tooltip to a UI element
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Display additional information when focusing (or hovering over) a UI element.
 #'
 #' @param trigger A UI element (i.e., [htmltools tag][htmltools::tags]) to serve
@@ -93,7 +91,6 @@ tooltip <- function(
   placement = c("auto", "top", "right", "bottom", "left"),
   options = list()
 ) {
-
   args <- separate_arguments(...)
   children <- args$children
   attribs <- args$attribs
@@ -148,17 +145,17 @@ toggle_tooltip <- function(id, show = NULL, session = get_current_session()) {
   session$onFlush(callback, once = TRUE)
 }
 
-
 #' @describeIn tooltip Update the contents of a tooltip.
 #' @export
 update_tooltip <- function(id, ..., session = get_current_session()) {
-
   title <- tagList(...)
 
-  msg <- dropNulls(list(
-    method = "update",
-    title = if (length(title) > 0) processDeps(title, session)
-  ))
+  msg <- dropNulls(
+    list(
+      method = "update",
+      title = if (length(title) > 0) processDeps(title, session)
+    )
+  )
 
   force(id)
   callback <- function() {
@@ -176,7 +173,6 @@ normalize_show_value <- function(show) {
 
   if (show) "show" else "hide"
 }
-
 
 to_json <- function(..., auto_unbox = TRUE, null = "null") {
   jsonlite::toJSON(..., auto_unbox = auto_unbox, null = null)

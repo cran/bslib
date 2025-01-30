@@ -1,8 +1,6 @@
 #' Add a popover to a UI element
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Display additional information when clicking on a UI element (typically a
 #' button).
 #'
@@ -119,7 +117,6 @@ popover <- function(
   placement = c("auto", "top", "right", "bottom", "left"),
   options = list()
 ) {
-
   args <- separate_arguments(...)
   children <- args$children
   attribs <- args$attribs
@@ -178,15 +175,21 @@ toggle_popover <- function(id, show = NULL, session = get_current_session()) {
 
 #' @describeIn popover Update the contents of a popover.
 #' @export
-update_popover <- function(id, ..., title = NULL, session = get_current_session()) {
-
+update_popover <- function(
+  id,
+  ...,
+  title = NULL,
+  session = get_current_session()
+) {
   body <- tagList(...)
 
-  msg <- dropNulls(list(
-    method = "update",
-    content = if (length(body) > 0) processDeps(body, session),
-    header = if (!is.null(title)) processDeps(title, session)
-  ))
+  msg <- dropNulls(
+    list(
+      method = "update",
+      content = if (length(body) > 0) processDeps(body, session),
+      header = if (!is.null(title)) processDeps(title, session)
+    )
+  )
 
   force(id)
   callback <- function() {

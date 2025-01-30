@@ -1,8 +1,6 @@
 #' Switch input control
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Create an on-off style switch control for specifying logical values.
 #'
 #' @examplesIf rlang::is_interactive()
@@ -46,7 +44,14 @@
 #' @family input controls
 #' @export
 input_switch <- function(id, label, value = FALSE, width = NULL) {
-  tag <- input_checkbox(id, label, class = "bslib-input-switch form-switch", value = value, width = width)
+  value <- shiny::restoreInput(id, default = value)
+  tag <- input_checkbox(
+    id,
+    label,
+    class = "bslib-input-switch form-switch",
+    value = value,
+    width = width
+  )
   tag <- tag_require(tag, version = 5, caller = "input_switch()")
   as_fragment(tag)
 }
@@ -54,7 +59,12 @@ input_switch <- function(id, label, value = FALSE, width = NULL) {
 #' @rdname input_switch
 #' @inheritParams nav_insert
 #' @export
-update_switch <- function(id, label = NULL, value = NULL, session = get_current_session()) {
+update_switch <- function(
+  id,
+  label = NULL,
+  value = NULL,
+  session = get_current_session()
+) {
   message <- dropNulls(list(label = label, value = value))
   session$sendInputMessage(id, message)
 }
@@ -80,7 +90,14 @@ toggle_switch <- function(id, value = NULL, session = get_current_session()) {
   session$onFlush(callback, once = TRUE)
 }
 
-input_checkbox <- function(id, label, class = "bslib-input-checkbox", value = FALSE, width = NULL, inline = FALSE) {
+input_checkbox <- function(
+  id,
+  label,
+  class = "bslib-input-checkbox",
+  value = FALSE,
+  width = NULL,
+  inline = FALSE
+) {
   div(
     class = "form-group shiny-input-container",
     class = if (inline) "shiny-input-container-inline",

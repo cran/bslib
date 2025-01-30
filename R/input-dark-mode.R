@@ -1,8 +1,6 @@
 #' Dark mode input control
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Creates a button that toggles between dark and light modes, specifically for
 #' toggling between light and dark [Bootstrap color
 #' modes](https://getbootstrap.com/docs/5.3/customize/color-modes/) -- a new
@@ -31,6 +29,10 @@
 input_dark_mode <- function(..., id = NULL, mode = NULL) {
   if (!is.null(mode)) {
     mode <- rlang::arg_match(mode, c("light", "dark"))
+  }
+
+  if (!is.null(id)) {
+    mode <- shiny::restoreInput(id, default = mode)
   }
 
   if (any(!nzchar(rlang::names2(rlang::list2(...))))) {
@@ -63,7 +65,11 @@ input_dark_mode <- function(..., id = NULL, mode = NULL) {
 #' @param session A Shiny session object (the default should almost always be
 #'   used).
 #' @export
-toggle_dark_mode <- function(mode = NULL, ..., session = get_current_session()) {
+toggle_dark_mode <- function(
+  mode = NULL,
+  ...,
+  session = get_current_session()
+) {
   rlang::check_dots_empty(
     error = function(err) rlang::warn(rlang::cnd_message(err))
   )

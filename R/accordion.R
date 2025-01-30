@@ -1,8 +1,6 @@
 #' Create a vertically collapsing accordion
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' An accordion can be used to organize UI elements and content in a limited
 #' space. It comprises multiple, vertically stacked panels that expand or
 #' collapse when clicked, providing a compact layout that works well for
@@ -70,8 +68,15 @@
 #'
 #' shinyApp(ui, server)
 #'
-accordion <- function(..., id = NULL, open = NULL, multiple = TRUE, class = NULL, width = NULL, height = NULL) {
-
+accordion <- function(
+  ...,
+  id = NULL,
+  open = NULL,
+  multiple = TRUE,
+  class = NULL,
+  width = NULL,
+  height = NULL
+) {
   args <- rlang::list2(...)
   argnames <- rlang::names2(args)
 
@@ -82,9 +87,13 @@ accordion <- function(..., id = NULL, open = NULL, multiple = TRUE, class = NULL
     open <- shiny::restoreInput(id = id, default = open)
   }
 
-  is_open <- vapply(children, function(x) {
-    isTRUE(open) || isTRUE(tagGetAttribute(x, "data-value") %in% open)
-  }, logical(1))
+  is_open <- vapply(
+    children,
+    function(x) {
+      isTRUE(open) || isTRUE(tagGetAttribute(x, "data-value") %in% open)
+    },
+    logical(1)
+  )
 
   if (!any(is_open) && !identical(open, FALSE)) {
     is_open[1] <- TRUE
@@ -103,12 +112,13 @@ accordion <- function(..., id = NULL, open = NULL, multiple = TRUE, class = NULL
   }
 
   children <- Map(
-    children, is_open,
+    children,
+    is_open,
     f = function(x, open) {
-
       if (!multiple) {
         x <- tagAppendAttributes(
-          x, "data-bs-parent" = paste0("#", id),
+          x,
+          "data-bs-parent" = paste0("#", id),
           .cssSelector = ".accordion-collapse"
         )
       }
@@ -117,7 +127,9 @@ accordion <- function(..., id = NULL, open = NULL, multiple = TRUE, class = NULL
       if (open) {
         tq <- tagQuery(x)
         tq$find(".accordion-collapse")$addClass("show")
-        tq$find(".accordion-button")$removeClass("collapsed")$removeAttrs("aria-expanded")$addAttrs("aria-expanded" = "true")
+        tq$find(".accordion-button")$removeClass("collapsed")$removeAttrs(
+          "aria-expanded"
+        )$addAttrs("aria-expanded" = "true")
         x <- tq$allTags()
       }
 
@@ -150,7 +162,6 @@ accordion <- function(..., id = NULL, open = NULL, multiple = TRUE, class = NULL
 #' @param icon A [htmltools::tag] child (e.g., [bsicons::bs_icon()]) which is positioned just before the `title`.
 #' @export
 accordion_panel <- function(title, ..., value = title, icon = NULL) {
-
   id <- paste0("bslib-accordion-panel-", p_randomInt(1000, 10000))
 
   btn <- tags$button(
@@ -184,8 +195,6 @@ accordion_panel <- function(title, ..., value = title, icon = NULL) {
 #' Dynamically update accordions
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Dynamically update/modify [`accordion()`]s in a Shiny app. To be updated
 #' programmatically, the [accordion()] must have an `id`. These functions
 #' require an active Shiny session and only work with a running Shiny app.
@@ -205,7 +214,9 @@ accordion_panel <- function(title, ..., value = title, icon = NULL) {
 #' @export
 accordion_panel_set <- function(id, values, session = get_current_session()) {
   send_panel_message(
-    id, session, method = "set",
+    id,
+    session,
+    method = "set",
     values = if (isTRUE(values)) values else as.list(check_character(values))
   )
 }
@@ -214,7 +225,9 @@ accordion_panel_set <- function(id, values, session = get_current_session()) {
 #' @export
 accordion_panel_open <- function(id, values, session = get_current_session()) {
   send_panel_message(
-    id, session, method = "open",
+    id,
+    session,
+    method = "open",
     values = if (isTRUE(values)) values else as.list(check_character(values))
   )
 }
@@ -223,7 +236,9 @@ accordion_panel_open <- function(id, values, session = get_current_session()) {
 #' @export
 accordion_panel_close <- function(id, values, session = get_current_session()) {
   send_panel_message(
-    id, session, method = "close",
+    id,
+    session,
+    method = "close",
     values = if (isTRUE(values)) values else as.list(check_character(values))
   )
 }
@@ -237,10 +252,18 @@ accordion_panel_close <- function(id, values, session = get_current_session()) {
 #'
 #' @describeIn accordion_panel_set insert a new [accordion_panel()]
 #' @export
-accordion_panel_insert <- function(id, panel, target = NULL, position = c("after", "before"), session = get_current_session()) {
+accordion_panel_insert <- function(
+  id,
+  panel,
+  target = NULL,
+  position = c("after", "before"),
+  session = get_current_session()
+) {
   position <- match.arg(position)
   send_panel_message(
-    id, session, method = "insert",
+    id,
+    session,
+    method = "insert",
     panel = processDeps(panel, session),
     target = if (!is.null(target)) check_character(target, max_length = 1),
     position = position
@@ -249,24 +272,39 @@ accordion_panel_insert <- function(id, panel, target = NULL, position = c("after
 
 #' @describeIn accordion_panel_set remove [accordion_panel()]s.
 #' @export
-accordion_panel_remove <- function(id, target, session = get_current_session()) {
+accordion_panel_remove <- function(
+  id,
+  target,
+  session = get_current_session()
+) {
   send_panel_message(
-    id, session, method = "remove",
+    id,
+    session,
+    method = "remove",
     target = as.list(check_character(target))
   )
 }
-
 
 #' @describeIn accordion_panel_set update a [accordion_panel()].
 #' @param ... Elements that become the new content of the panel.
 #' @inheritParams accordion_panel
 #' @export
-accordion_panel_update <- function(id, target, ..., title = NULL, value = NULL, icon = NULL, session = get_current_session()) {
+accordion_panel_update <- function(
+  id,
+  target,
+  ...,
+  title = NULL,
+  value = NULL,
+  icon = NULL,
+  session = get_current_session()
+) {
   rlang::check_dots_unnamed()
   body <- rlang::list2(...)
 
   send_panel_message(
-    id, session, method = "update",
+    id,
+    session,
+    method = "update",
     target = check_character(target, max_length = 1),
     value = if (!is.null(value)) check_character(value, max_length = 1),
     body = if (length(body) == 0) NULL else processDeps(body, session),
@@ -274,7 +312,6 @@ accordion_panel_update <- function(id, target, ..., title = NULL, value = NULL, 
     icon = if (!is.null(icon)) processDeps(icon, session)
   )
 }
-
 
 # Send message before the next flush since things like remove/insert may
 # remove/create input/output values. Also do this for set/open/close since,
@@ -285,7 +322,12 @@ send_panel_message <- function(id, session, ...) {
   session$onFlush(callback, once = TRUE)
 }
 
-check_character <- function(x, max_length = Inf, min_length = 1, call = rlang::caller_env()) {
+check_character <- function(
+  x,
+  max_length = Inf,
+  min_length = 1,
+  call = rlang::caller_env()
+) {
   x_name <- deparse(substitute(x))
   if (!is.character(x)) {
     abort(

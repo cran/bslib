@@ -13,9 +13,13 @@
 #' @param selected a character string matching the `value` of a particular
 #'   [nav_panel()] item to selected by default.
 #' @param header UI element(s) ([htmltools::tags]) to display _above_ the nav
-#'   content.
+#'   content. For `card`-based navsets, these elements are implicitly wrapped in
+#'   a `card_body()`. To control things like `padding`, `fill`, etc., wrap the
+#'   elements in an explicit [card_body()].
 #' @param footer UI element(s) ([htmltools::tags]) to display _below_ the nav
-#'   content.
+#'   content. For `card`-based navsets, these elements are implicitly wrapped in
+#'   a `card_body()`. To control things like `padding`, `fill`, etc., wrap the
+#'   elements in an explicit [card_body()].
 #'
 #' @seealso [nav_panel()], [nav_panel_hidden()] create panels of content.
 #' @seealso [nav_menu()], [nav_item()], [nav_spacer()] create menus, items, or
@@ -29,22 +33,40 @@
 #' @rdname navset
 #' @name navset
 #' @export
-navset_tab <- function(..., id = NULL, selected = NULL,
-                     header = NULL, footer = NULL) {
+navset_tab <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  header = NULL,
+  footer = NULL
+) {
   tabs <- tabsetPanel_(
-    ..., type = "tabs", id = id, selected = selected,
-    header = header, footer = footer
+    ...,
+    type = "tabs",
+    id = id,
+    selected = selected,
+    header = header,
+    footer = footer
   )
   as_fragment(tabs)
 }
 
 #' @export
 #' @rdname navset
-navset_pill <- function(..., id = NULL, selected = NULL,
-                      header = NULL, footer = NULL) {
+navset_pill <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  header = NULL,
+  footer = NULL
+) {
   pills <- tabsetPanel_(
-    ..., type = "pills", id = id, selected = selected,
-    header = header, footer = footer
+    ...,
+    type = "pills",
+    id = id,
+    selected = selected,
+    header = header,
+    footer = footer
   )
   as_fragment(pills)
 }
@@ -59,8 +81,12 @@ navset_underline <- function(
   footer = NULL
 ) {
   res <- tabsetPanel_(
-    ..., type = "underline", id = id, selected = selected,
-    header = header, footer = footer
+    ...,
+    type = "underline",
+    id = id,
+    selected = selected,
+    header = header,
+    footer = footer
   )
   as_fragment(res)
 }
@@ -68,14 +94,24 @@ navset_underline <- function(
 #' @export
 #' @inheritParams shiny::navlistPanel
 #' @rdname navset
-navset_pill_list <- function(..., id = NULL, selected = NULL,
-                           header = NULL, footer = NULL,
-                           well = TRUE, fluid = TRUE,
-                           widths = c(4, 8)) {
+navset_pill_list <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  header = NULL,
+  footer = NULL,
+  well = TRUE,
+  fluid = TRUE,
+  widths = c(4, 8)
+) {
   pill_list <- navlistPanel_(
-    ..., id = id, selected = selected,
-    header = header, footer = footer,
-    well = well, fluid = fluid,
+    ...,
+    id = id,
+    selected = selected,
+    header = header,
+    footer = footer,
+    well = well,
+    fluid = fluid,
     widths = widths
   )
   as_fragment(pill_list)
@@ -83,11 +119,20 @@ navset_pill_list <- function(..., id = NULL, selected = NULL,
 
 #' @export
 #' @rdname navset
-navset_hidden <- function(..., id = NULL, selected = NULL,
-                        header = NULL, footer = NULL) {
+navset_hidden <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  header = NULL,
+  footer = NULL
+) {
   hidden <- tabsetPanel_(
-    ..., type = "hidden", id = id, selected = selected,
-    header = header, footer = footer
+    ...,
+    type = "hidden",
+    id = id,
+    selected = selected,
+    header = header,
+    footer = footer
   )
   as_fragment(hidden)
 }
@@ -101,30 +146,61 @@ navset_hidden <- function(..., id = NULL, selected = NULL,
 #'   character vector, matching the `value` of [nav_panel()]s to be filled, may
 #'   also be provided. Note that, if a `sidebar` is provided, `fillable` makes
 #'   the main content portion fillable.
-#' @param bg a CSS color to use for the navbar's background color.
-#' @param inverse Either `TRUE` for a light text color or `FALSE` for a dark
-#'   text color. If `"auto"` (the default), the best contrast to `bg` is chosen.
+#' @param navbar_options Options to control the appearance and behavior of the
+#'   navbar. Use [navbar_options()] to create the list of options.
+#' @param position `r lifecycle::badge("deprecated")` Please use
+#'   [`navbar_options = navbar_options(position=)`][navbar_options] instead.
+#' @param collapsible `r lifecycle::badge("deprecated")` Please use
+#'   [`navbar_options = navbar_options(collapsible=)`][navbar_options] instead.
+#' @param bg `r lifecycle::badge("deprecated")` Please use
+#'   [`navbar_options = navbar_options(bg=)`][navbar_options] instead.
+#' @param inverse `r lifecycle::badge("deprecated")` Please use
+#'   [`navbar_options = navbar_options(inverse=)`][navbar_options] instead.
+#'
 #' @export
 #' @rdname navset
-navset_bar <- function(..., title = NULL, id = NULL, selected = NULL,
-                     sidebar = NULL, fillable = TRUE,
-                     gap = NULL, padding = NULL,
-                     # TODO: add sticky-top as well?
-                     position = c("static-top", "fixed-top", "fixed-bottom"),
-                     header = NULL, footer = NULL,
-                     bg = NULL, inverse = "auto",
-                     collapsible = TRUE, fluid = TRUE) {
+navset_bar <- function(
+  ...,
+  title = NULL,
+  id = NULL,
+  selected = NULL,
+  sidebar = NULL,
+  fillable = TRUE,
+  gap = NULL,
+  padding = NULL,
+  header = NULL,
+  footer = NULL,
+  fluid = TRUE,
+  navbar_options = NULL,
+  position = deprecated(),
+  bg = deprecated(),
+  inverse = deprecated(),
+  collapsible = deprecated()
+) {
   padding <- validateCssPadding(padding)
   gap <- validateCssUnit(gap)
 
-  navs_bar_(
-    ..., title = title, id = id, selected = selected,
-    sidebar = sidebar, fillable = fillable,
-    gap = gap, padding = padding,
+  .navbar_options <- navbar_options_resolve_deprecated(
+    options_user = navbar_options,
     position = position,
-    header = header, footer = footer,
-    bg = bg, inverse = inverse,
-    collapsible = collapsible, fluid = fluid,
+    bg = bg,
+    inverse = inverse,
+    collapsible = collapsible
+  )
+
+  navs_bar_(
+    ...,
+    title = title,
+    id = id,
+    selected = selected,
+    sidebar = sidebar,
+    fillable = fillable,
+    gap = gap,
+    padding = padding,
+    header = header,
+    footer = footer,
+    fluid = fluid,
+    navbar_options = .navbar_options,
     # theme is only used to determine whether legacy style markup should be used
     # (and, at least at the moment, we don't need legacy markup for this exported function)
     theme = bs_theme()
@@ -135,44 +211,69 @@ navset_bar <- function(..., title = NULL, id = NULL, selected = NULL,
 # (and thus shiny::navbarPage()) can use it. And in the page_navbar() case,
 # we can use addition theme information as an indication of whether we need
 # to handle backwards compatibility
-navs_bar_ <- function(..., title = NULL, id = NULL, selected = NULL,
-                      sidebar = NULL, fillable = TRUE,
-                      gap = NULL, padding = NULL,
-                      position = c("static-top", "fixed-top", "fixed-bottom"),
-                      header = NULL, footer = NULL,
-                      bg = NULL, inverse = "auto",
-                      underline = TRUE,
-                      collapsible = TRUE, fluid = TRUE,
-                      theme = NULL) {
+navs_bar_ <- function(
+  ...,
+  title = NULL,
+  id = NULL,
+  selected = NULL,
+  sidebar = NULL,
+  fillable = TRUE,
+  gap = NULL,
+  padding = NULL,
+  navbar_options = NULL,
+  header = NULL,
+  footer = NULL,
+  fluid = TRUE,
+  theme = NULL
+) {
+  navbar_options <- navbar_options %||% navbar_options()
 
-  if (identical(inverse, "auto")) {
-    inverse <- TRUE
-    if (identical(theme_preset_info(theme)$name, "shiny")) {
-      inverse <- FALSE
+  navbar_theme <- navbar_options[["theme"]]
+  navbar_bg <- navbar_options[["bg"]]
+
+  if (identical(navbar_theme, "auto")) {
+    if (is.null(theme) || theme_version(theme) < 5) {
+      navbar_theme <- "dark"
     }
-    if (!is.null(bg)) {
-      bg <- htmltools::parseCssColors(bg)
-      bg_contrast <- bs_get_contrast(bs_theme("navbar-bg" = bg), "navbar-bg")
-      inverse <- col2rgb(bg_contrast)[1,] > 127.5
+    if (!is.null(navbar_bg)) {
+      navbar_bg <- htmltools::parseCssColors(navbar_bg)
+      bg_contrast <- get_color_contrast(navbar_bg)
+      navbar_theme <- if (bg_contrast == "#FFFFFF") "dark" else "light"
     }
   }
 
   navbar <- navbarPage_(
-    title = title, ..., id = id, selected = selected,
-    sidebar = sidebar, fillable = fillable,
-    gap = gap, padding = padding,
-    position = match.arg(position),
-    header = header, footer = footer, collapsible = collapsible,
-    inverse = inverse, underline = underline, fluid = fluid,
+    title = title,
+    ...,
+    id = id,
+    selected = selected,
+    sidebar = sidebar,
+    fillable = fillable,
+    gap = gap,
+    padding = padding,
+    position = navbar_options[["position"]],
+    header = header,
+    footer = footer,
+    collapsible = navbar_options[["collapsible"]],
+    inverse = identical(navbar_theme, "dark"),
+    underline = navbar_options[["underline"]],
+    fluid = fluid,
     theme = theme
   )
 
-  if (!is.null(bg)) {
-    # navbarPage_() returns a tagList() of the nav and content
-    navbar[[1]] <- tagAppendAttributes(
-      navbar[[1]], style = css(background_color = paste(bg, "!important"))
-    )
-  }
+  attribs <- navbar_options[["attribs"]] %||% list()
+
+  # Use user-provided `data-bs-theme` or our internally selected `theme`. If the
+  # user includes both, the attribute wins for being most technically-correct.
+  attribs[["data-bs-theme"]] <- attribs[["data-bs-theme"]] %||% navbar_theme
+
+  # navbarPage_() returns a tagList() of the nav and content
+  navbar[[1]] <- tagAppendAttributes(
+    navbar[[1]],
+    style = if (!is.null(navbar_bg))
+      css(background_color = paste(navbar_bg, "!important")),
+    !!!attribs
+  )
 
   as_fragment(navbar, page = page)
 }
@@ -182,23 +283,24 @@ navs_bar_ <- function(..., title = NULL, id = NULL, selected = NULL,
 #  (with minor modifications)
 # -----------------------------------------------------------------------
 
-navbarPage_ <- function(title,
-                       ...,
-                       id = NULL,
-                       selected = NULL,
-                       sidebar = NULL,
-                       fillable = TRUE,
-                       gap = NULL,
-                       padding = NULL,
-                       position = c("static-top", "fixed-top", "fixed-bottom"),
-                       header = NULL,
-                       footer = NULL,
-                       inverse = FALSE,
-                       underline = TRUE,
-                       collapsible = FALSE,
-                       fluid = TRUE,
-                       theme = NULL) {
-
+navbarPage_ <- function(
+  title,
+  ...,
+  id = NULL,
+  selected = NULL,
+  sidebar = NULL,
+  fillable = TRUE,
+  gap = NULL,
+  padding = NULL,
+  position = c("static-top", "fixed-top", "fixed-bottom"),
+  header = NULL,
+  footer = NULL,
+  inverse = FALSE,
+  underline = TRUE,
+  collapsible = FALSE,
+  fluid = TRUE,
+  theme = NULL
+) {
   # alias title so we can avoid conflicts w/ title in withTags
   pageTitle <- title
 
@@ -207,16 +309,13 @@ navbarPage_ <- function(title,
   position <- match.arg(position)
   if (!is.null(position))
     navbarClass <- paste0(navbarClass, " navbar-", position)
-  if (inverse)
-    navbarClass <- paste(navbarClass, "navbar-inverse")
+  if (isTRUE(inverse)) navbarClass <- paste(navbarClass, "navbar-inverse")
 
-  if (!is.null(id))
-    selected <- shiny::restoreInput(id = id, default = selected)
+  if (!is.null(id)) selected <- shiny::restoreInput(id = id, default = selected)
 
   # build the tabset
   ulClass <- "nav navbar-nav"
-  if (underline)
-    ulClass <- paste(ulClass, "nav-underline")
+  if (underline) ulClass <- paste(ulClass, "nav-underline")
   tabset <- buildTabset(..., ulClass = ulClass, id = id, selected = selected)
 
   containerClass <- paste0("container", if (fluid) "-fluid")
@@ -236,7 +335,7 @@ navbarPage_ <- function(title,
           # data-bs-* is for BS5+
           `data-bs-toggle` = "collapse",
           `data-bs-target` = paste0("#", navId),
-          span(class="sr-only visually-hidden", "Toggle navigation"),
+          span(class = "sr-only visually-hidden", "Toggle navigation"),
           span(class = "icon-bar"),
           span(class = "icon-bar"),
           span(class = "icon-bar")
@@ -245,7 +344,8 @@ navbarPage_ <- function(title,
       ),
       div(
         class = "navbar-collapse collapse",
-        id = navId, tabset$navList
+        id = navId,
+        tabset$navList
       )
     )
   } else {
@@ -262,16 +362,20 @@ navbarPage_ <- function(title,
   # Bootstrap 3 explicitly supported "dropup menus" via .navbar-fixed-bottom,
   # but BS4+ requires .dropup on menus with .navbar.fixed-bottom
   if (position == "fixed-bottom") {
-    containerDiv <- tagQuery(containerDiv)$
-      find(".dropdown-menu")$
-      parent()$
-      addClass("dropup")$
-      allTags()
+    containerDiv <- tagQuery(containerDiv)$find(
+      ".dropdown-menu"
+    )$parent()$addClass("dropup")$allTags()
   }
 
   # If fillable is truthy, give the relevant .tab-content > .tab-pane containers
   # the potential to fill
-  tabset$content <- makeTabsFillable(tabset$content, fillable, navbar = TRUE, gap = gap, padding = padding)
+  tabset$content <- makeTabsFillable(
+    tabset$content,
+    fillable,
+    navbar = TRUE,
+    gap = gap,
+    padding = padding
+  )
 
   # For backwards compatibility reasons, wrap header & footer in a .row
   # container if we're not using BS5+. I'm not entirely sure what the motivation
@@ -289,16 +393,13 @@ navbarPage_ <- function(title,
   contents <- dropNulls(list(header, tabset$content, footer))
 
   if (is.null(sidebar)) {
-
     contentDiv <- div(class = containerClass, !!!contents)
 
     # If fillable is truthy, the .container also needs to be fillable
     if (!isFALSE(fillable)) {
       contentDiv <- bindFillRole(contentDiv, container = TRUE, item = TRUE)
     }
-
   } else {
-
     contentDiv <- div(
       # In the fluid case, the sidebar layout should be flush (i.e.,
       # the .container-fluid class adds padding that we don't want)
@@ -315,7 +416,6 @@ navbarPage_ <- function(title,
     # Always have the sidebar layout fill its parent (in this case
     # fillable controls whether the _main_ content portion is fillable)
     contentDiv <- bindFillRole(contentDiv, container = TRUE, item = TRUE)
-
   }
 
   # *Don't* wrap in bootstrapPage() (shiny::navbarPage()) does that part
@@ -334,7 +434,8 @@ navbarMenu_ <- function(title, ..., menuName = title, icon = NULL, align) {
       tabs = list2(...),
       # Here for legacy reasons
       # https://github.com/cran/miniUI/blob/74c87d3/R/layout.R#L369
-      iconClass = if (inherits(icon, "shiny.tag")) tagGetAttribute(icon, "class"),
+      iconClass = if (inherits(icon, "shiny.tag"))
+        tagGetAttribute(icon, "class"),
       icon = icon,
       align = align
     ),
@@ -354,7 +455,8 @@ tabPanel_ <- function(title, ..., value = title, icon = NULL) {
     `data-value` = value,
     # Here for legacy reasons
     # https://github.com/cran/miniUI/blob/74c87d/R/layout.R#L395
-    `data-icon-class` = if (inherits(icon, "shiny.tag")) tagGetAttribute(icon, "class"),
+    `data-icon-class` = if (inherits(icon, "shiny.tag"))
+      tagGetAttribute(icon, "class"),
     ...
   )
   attr(pane, "_shiny_icon") <- icon
@@ -370,55 +472,64 @@ isTabPanel <- function(x) {
 tabPanelBody_ <- function(value, ..., icon = NULL) {
   if (
     !is.character(value) ||
-    length(value) != 1 ||
-    any(is.na(value)) ||
-    nchar(value) == 0
+      length(value) != 1 ||
+      any(is.na(value)) ||
+      nchar(value) == 0
   ) {
     stop("`value` must be a single, non-empty string value")
   }
   tabPanel_(title = NULL, ..., value = value, icon = icon)
 }
 
-tabsetPanel_ <- function(...,
-                        id = NULL,
-                        selected = NULL,
-                        type = c("tabs", "pills", "hidden", "underline"),
-                        header = NULL,
-                        footer = NULL) {
-
-  if (!is.null(id))
-    selected <- shiny::restoreInput(id = id, default = selected)
+tabsetPanel_ <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  type = c("tabs", "pills", "hidden", "underline"),
+  header = NULL,
+  footer = NULL
+) {
+  if (!is.null(id)) selected <- shiny::restoreInput(id = id, default = selected)
 
   type <- match.arg(type)
-  tabset <- buildTabset(..., ulClass = paste0("nav nav-", type), id = id, selected = selected)
+  tabset <- buildTabset(
+    ...,
+    ulClass = paste0("nav nav-", type),
+    id = id,
+    selected = selected
+  )
 
   tags$div(
     class = "tabbable",
-    !!!dropNulls(list(
-      tabset$navList,
-      header,
-      tabset$content,
-      footer
-    ))
+    !!!dropNulls(
+      list(
+        tabset$navList,
+        header,
+        tabset$content,
+        footer
+      )
+    )
   )
 }
 
-navlistPanel_ <- function(...,
-                         id = NULL,
-                         selected = NULL,
-                         header = NULL,
-                         footer = NULL,
-                         well = TRUE,
-                         fluid = TRUE,
-                         widths = c(4, 8)) {
-
-  if (!is.null(id))
-    selected <- shiny::restoreInput(id = id, default = selected)
+navlistPanel_ <- function(
+  ...,
+  id = NULL,
+  selected = NULL,
+  header = NULL,
+  footer = NULL,
+  well = TRUE,
+  fluid = TRUE,
+  widths = c(4, 8)
+) {
+  if (!is.null(id)) selected <- shiny::restoreInput(id = id, default = selected)
 
   tabset <- buildTabset(
-    ..., ulClass = "nav nav-pills nav-stacked",
+    ...,
+    ulClass = "nav nav-pills nav-stacked",
     textFilter = function(text) tags$li(class = "navbar-brand", text),
-    id = id, selected = selected
+    id = id,
+    selected = selected
   )
 
   row <- if (fluid) shiny::fluidRow else shiny::fixedRow
@@ -431,7 +542,6 @@ navlistPanel_ <- function(...,
     )
   )
 }
-
 
 # Helpers to build tabsetPanels (& Co.) and their elements
 markTabAsSelected <- function(x) {
@@ -451,13 +561,11 @@ findAndMarkSelectedTab <- function(tabs, selected, foundSelected) {
   tabs <- lapply(tabs, function(x) {
     if (foundSelected || is.character(x)) {
       # Strings are not selectable items
-
     } else if (isNavbarMenu(x)) {
       # Recur for navbarMenus
       res <- findAndMarkSelectedTab(x$tabs, selected, foundSelected)
       x$tabs <- res$tabs
       foundSelected <<- res$foundSelected
-
     } else if (isTabPanel(x)) {
       # Base case: regular tab item. If the `selected` argument is
       # provided, check for a match in the existing tabs; else,
@@ -490,15 +598,20 @@ prepTabIcon <- function(x = NULL) {
 
 # Text filter for navbarMenu's (plain text) separators
 navbarMenuTextFilter <- function(text) {
-  if (grepl("^\\-+$", text)) tags$li(class = "divider")
-  else tags$li(class = "dropdown-header", text)
+  if (grepl("^\\-+$", text)) tags$li(class = "divider") else
+    tags$li(class = "dropdown-header", text)
 }
 
 # This function is called internally by navbarPage, tabsetPanel
 # and navlistPanel
-buildTabset <- function(..., ulClass, textFilter = NULL, id = NULL,
-                        selected = NULL, foundSelected = FALSE) {
-
+buildTabset <- function(
+  ...,
+  ulClass,
+  textFilter = NULL,
+  id = NULL,
+  selected = NULL,
+  foundSelected = FALSE
+) {
   tabs <- dropNulls(list2(...))
   res <- findAndMarkSelectedTab(tabs, selected, foundSelected)
   tabs <- res$tabs
@@ -510,20 +623,34 @@ buildTabset <- function(..., ulClass, textFilter = NULL, id = NULL,
   if (anyNamed(tabs)) {
     nms <- names(tabs)
     nms <- nms[nzchar(nms)]
-    stop("Tabs should all be unnamed arguments, but some are named: ",
-         paste(nms, collapse = ", "))
+    stop(
+      "Tabs should all be unnamed arguments, but some are named: ",
+      paste(nms, collapse = ", ")
+    )
   }
 
   tabsetId <- p_randomInt(1000, 10000)
-  tabs <- lapply(seq_len(length(tabs)), buildTabItem,
-                 tabsetId = tabsetId, foundSelected = foundSelected,
-                 tabs = tabs, textFilter = textFilter)
+  tabs <- lapply(
+    seq_len(length(tabs)),
+    buildTabItem,
+    tabsetId = tabsetId,
+    foundSelected = foundSelected,
+    tabs = tabs,
+    textFilter = textFilter
+  )
 
-  tabNavList <- tags$ul(class = ulClass, id = id,
-                        `data-tabsetid` = tabsetId, !!!lapply(tabs, "[[", "liTag"))
+  tabNavList <- tags$ul(
+    class = ulClass,
+    id = id,
+    `data-tabsetid` = tabsetId,
+    !!!lapply(tabs, "[[", "liTag")
+  )
 
-  tabContent <- tags$div(class = "tab-content",
-                         `data-tabsetid` = tabsetId, !!!lapply(tabs, "[[", "divTag"))
+  tabContent <- tags$div(
+    class = "tab-content",
+    `data-tabsetid` = tabsetId,
+    !!!lapply(tabs, "[[", "divTag")
+  )
 
   list(navList = tabNavList, content = tabContent)
 }
@@ -532,9 +659,14 @@ buildTabset <- function(..., ulClass, textFilter = NULL, id = NULL,
 # declared inside the buildTabset() function and it's been
 # refactored for clarity and reusability). Called internally
 # by buildTabset.
-buildTabItem <- function(index, tabsetId, foundSelected, tabs = NULL,
-                         divTag = NULL, textFilter = NULL) {
-
+buildTabItem <- function(
+  index,
+  tabsetId,
+  foundSelected,
+  tabs = NULL,
+  divTag = NULL,
+  textFilter = NULL
+) {
   divTag <- divTag %||% tabs[[index]]
 
   # Handles navlistPanel() headers and dropdown dividers
@@ -549,7 +681,8 @@ buildTabItem <- function(index, tabsetId, foundSelected, tabs = NULL,
       ulClass <- paste(ulClass, "dropdown-menu-right dropdown-menu-end")
     }
     tabset <- buildTabset(
-      !!!divTag$tabs, ulClass = ulClass,
+      !!!divTag$tabs,
+      ulClass = ulClass,
       textFilter = navbarMenuTextFilter,
       foundSelected = foundSelected
     )
@@ -576,7 +709,7 @@ buildTabItem <- function(index, tabsetId, foundSelected, tabs = NULL,
 
   # Luckily this case has never worked, so it's safe to throw here
   # https://github.com/rstudio/shiny/issues/3313
-  if (!inherits(divTag, "shiny.tag"))  {
+  if (!inherits(divTag, "shiny.tag")) {
     stop(msg, call. = FALSE)
   }
 
@@ -606,11 +739,9 @@ buildNavItem <- function(divTag, tabsetId, index) {
       liTag(id, title, value, attr(divTag, "_shiny_icon")),
       function(x) {
         if (isTRUE(getCurrentThemeVersion() >= 4)) {
-          tagQuery(x)$
-            addClass("nav-item")$
-            find("a")$
-            addClass(c("nav-link", if (active) "active"))$
-            allTags()
+          tagQuery(x)$addClass("nav-item")$find("a")$addClass(
+            c("nav-link", if (active) "active")
+          )$allTags()
         } else {
           tagAppendAttributes(x, class = if (active) "active")
         }
@@ -627,24 +758,20 @@ liTag <- function(id, title, value, icon) {
       # data-bs-* is for BS5+
       `data-bs-toggle` = "tab",
       `data-value` = value,
-      icon, title
+      icon,
+      title
     )
   )
 }
 
 buildDropdown <- function(divTag, tabset) {
-
   navList <- tagAddRenderHook(
     tabset$navList,
     function(x) {
       if (isTRUE(getCurrentThemeVersion() >= 4)) {
-        tagQuery(x)$
-          find(".nav-item")$
-          removeClass("nav-item")$
-          find(".nav-link")$
-          removeClass("nav-link")$
-          addClass("dropdown-item")$
-          allTags()
+        tagQuery(x)$find(".nav-item")$removeClass("nav-item")$find(
+          ".nav-link"
+        )$removeClass("nav-link")$addClass("dropdown-item")$allTags()
       } else {
         x
       }
@@ -669,12 +796,9 @@ buildDropdown <- function(divTag, tabset) {
     navList,
     .renderHook = function(x) {
       if (isTRUE(getCurrentThemeVersion() >= 4)) {
-        tagQuery(x)$
-          addClass("nav-item")$
-          find(".dropdown-toggle")$
-          addClass("nav-link")$
-          addClass(if (active) "active")$
-          allTags()
+        tagQuery(x)$addClass("nav-item")$find(".dropdown-toggle")$addClass(
+          "nav-link"
+        )$addClass(if (active) "active")$allTags()
       } else {
         tagAppendAttributes(x, class = if (active) "active")
       }

@@ -49,20 +49,18 @@ navset_card_pill <- function(
   full_screen = FALSE,
   wrapper = card_body
 ) {
-
   items <- collect_nav_items(..., wrapper = wrapper)
 
-  pills <- navset_pill(
-    !!!items, id = id, selected = selected,
-    header = header, footer = footer
-  )
+  pills <- navset_pill(!!!items, id = id, selected = selected)
 
   above <- match.arg(placement) == "above"
 
   pillQ <- tagQuery(pills)
 
   # https://getbootstrap.com/docs/5.0/components/card/#navigation
-  nav <- pillQ$children(".nav")$addClass(if (above) "card-header-pills")$selectedTags()[[1]]
+  nav <- pillQ$children(".nav")$addClass(
+    if (above) "card-header-pills"
+  )$selectedTags()[[1]]
   content <- pillQ$children(".tab-content")$selectedTags()[[1]]
 
   nav_args <- if (!is.null(title)) {
@@ -75,7 +73,9 @@ navset_card_pill <- function(
     height = height,
     full_screen = full_screen,
     if (above) card_header(!!!nav_args),
+    header,
     navs_card_body(content, sidebar),
+    footer,
     if (!above) card_footer(!!!nav_args)
   )
 }
@@ -110,8 +110,6 @@ navset_card_underline <- function(
   )
 }
 
-
-
 navset_card <- function(
   navset_func,
   nav_class,
@@ -126,12 +124,9 @@ navset_card <- function(
   full_screen,
   wrapper
 ) {
-
   items <- collect_nav_items(..., wrapper = wrapper)
 
-  tabs <- navset_func(
-    !!!items, id = id, selected = selected, header = header, footer = footer
-  )
+  tabs <- navset_func(!!!items, id = id, selected = selected)
 
   tabQ <- tagQuery(tabs)
 
@@ -147,10 +142,11 @@ navset_card <- function(
     } else {
       card_header(nav)
     },
-    navs_card_body(content, sidebar)
+    header,
+    navs_card_body(content, sidebar),
+    footer
   )
 }
-
 
 collect_nav_items <- function(..., wrapper) {
   items <- rlang::list2(...)
@@ -185,11 +181,19 @@ navs_card_body <- function(content, sidebar) {
   as.card_item(content)
 }
 
-
 # Given a .tab-content container, mark each relevant .tab-pane as a
 # fill container/item.
-makeTabsFillable <- function(content, fillable = TRUE, navbar = FALSE, gap = NULL, padding = NULL) {
-  if (!inherits(content, "shiny.tag") || !tagQuery(content)$hasClass("tab-content")) {
+makeTabsFillable <- function(
+  content,
+  fillable = TRUE,
+  navbar = FALSE,
+  gap = NULL,
+  padding = NULL
+) {
+  if (
+    !inherits(content, "shiny.tag") ||
+      !tagQuery(content)$hasClass("tab-content")
+  ) {
     abort("Expected `content` to be a tag with a tab-content class")
   }
 
@@ -201,24 +205,22 @@ makeTabsFillable <- function(content, fillable = TRUE, navbar = FALSE, gap = NUL
   # must to be a fillable container.
   content <- bindFillRole(content, container = TRUE, item = TRUE)
 
-  tagQuery(content)$
-    find(".tab-pane")$
-    each(function(x, i) {
+  tagQuery(content)$find(".tab-pane")$each(function(x, i) {
+    if (
+      isTRUE(fillable) || isTRUE(tagGetAttribute(x, "data-value") %in% fillable)
+    ) {
+      x <- tagAppendAttributes(
+        class = "bslib-gap-spacing",
+        style = css(
+          # Remove the margin between nav and content (for page_navbar())
+          "--bslib-navbar-margin" = if (navbar) 0,
+          gap = gap,
+          padding = padding
+        ),
+        bindFillRole(x, container = TRUE, item = TRUE)
+      )
+    }
 
-      if (isTRUE(fillable) || isTRUE(tagGetAttribute(x, "data-value") %in% fillable)) {
-        x <- tagAppendAttributes(
-          class = "bslib-gap-spacing",
-          style = css(
-            # Remove the margin between nav and content (for page_navbar())
-            "--bslib-navbar-margin" = if (navbar) 0,
-            gap = gap,
-            padding = padding
-          ),
-          bindFillRole(x, container = TRUE, item = TRUE)
-        )
-      }
-
-      x
-    })$
-    allTags()
+    x
+  })$allTags()
 }

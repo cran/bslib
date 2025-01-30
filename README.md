@@ -1,4 +1,6 @@
 
+# bslib <a href='https://rstudio.github.io/bslib/'><img src='man/figures/logo.png' align="right" height="138" /></a>
+
 <!-- badges: start -->
 
 [![CRAN
@@ -9,8 +11,6 @@ badge](https://rstudio.r-universe.dev/badges/bslib)](https://rstudio.r-universe.
 status](https://github.com/rstudio/bslib/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/bslib/actions)
 
 <!-- badges: end -->
-
-# bslib
 
 The `bslib` R package provides a modern UI toolkit for
 [Shiny](https://shiny.posit.co/) and [R
